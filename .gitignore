@@ -24,6 +24,15 @@ target/
 .springBeans
 .sts4-cache
 
+## Database Config ##
+
+src/main/resources/META-INF/persistence.xml
+src/main/resources/application.properties
+
+
+# Test files with credentials
+src/main/java/com/example/jeemedexteleexpertise/util/DatabaseConnectionTest.java
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
