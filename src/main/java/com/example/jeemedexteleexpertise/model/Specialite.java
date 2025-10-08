@@ -22,5 +22,5 @@ public enum Specialite {
         return displayName;
     }
 
-    
+
 }
