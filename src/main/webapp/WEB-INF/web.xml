@@ -3,4 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
+
+
+    <display-name>JEE-medex-teleexpertise</display-name>
+    <description> Medical Tele-Expertise System For Coordination Between Generalists and Specialists</description>
+    <welcome-file-list>
+        <welcome-file>jsp/login.jps</welcome-file>
+    </welcome-file-list>
+
+    <!-- Session configuration : we configure it ( andiro timeout 1hour-->
+    <session-config>
+        <session-timeout>60</session-timeout> <!-- 60 minutes -->
+        <cookie-config>
+            <http-only>true</http-only>
+            <secure>false</secure> <!-- Set to true in prod  with HTTPS -->
+        </cookie-config>
+    </session-config>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/jsp/error/404.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>500</error-code>
+        <location>/jsp/error/500.jsp</location>
+
+
 </web-app>
