@@ -17,7 +17,7 @@ public class Specialiste extends Utilisateur {
     private String specialite;
 
     @Column(name = "duree_consultation")
-    private int dureeConsultation = 30; 
+    private int dureeConsultation = 30;
 
     public Specialiste() {
         super();
