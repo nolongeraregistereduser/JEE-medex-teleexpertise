@@ -4,7 +4,7 @@ public enum Role {
     ADMIN("Administrateur"),
     GENERALISTE("Médecin Généraliste"),
     SPECIALISTE("Médecin Spécialiste"),
-    INFIRMIER("Infirmier(ère)");
+    INFERMIER("Infirmier(ère)");
 
     private final String displayName;
 
