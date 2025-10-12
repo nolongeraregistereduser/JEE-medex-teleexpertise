@@ -5,55 +5,37 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("SPECIALISTE")
-public class Specialiste extends Utilisateur {
+@DiscriminatorValue("GENERALISTE")
+public class Generaliste extends Utilisateur {
 
     @Column(name = "tarif")
-    private double tarif;
+    private double tarif = 150.0;
 
-    @Column(name = "specialite")
-    private String specialite;
-
-    @Column(name = "duree_consultation")
-    private int dureeConsultation = 30;
-
-    public Specialiste() {
+    public Generaliste() {
         super();
     }
 
-    public Specialiste(String nom, String prenom, String email, String motDePasse, double tarif, String specialite, int dureeConsultation) {
+    public Generaliste(String nom, String prenom, String email, String motDePasse) {
+        super(nom, prenom, email, motDePasse);
+        this.tarif = 150.0; // Default
+    }
+
+    public Generaliste(String nom, String prenom, String email, String motDePasse, double tarif) {
         super(nom, prenom, email, motDePasse);
         this.tarif = tarif;
-        this.specialite = specialite;
-        this.dureeConsultation = dureeConsultation;
     }
 
     @Override
     public Role getRole() {
-        return Role.SPECIALISTE;
+        return Role.GENERALISTE;
     }
 
+    // Getters and Setters
     public double getTarif() {
         return tarif;
     }
 
     public void setTarif(double tarif) {
         this.tarif = tarif;
-    }
-
-    public String getSpecialite() {
-        return specialite;
-    }
-
-    public void setSpecialite(String specialite) {
-        this.specialite = specialite;
-    }
-
-    public int getDureeConsultation() {
-        return dureeConsultation;
-    }
-
-    public void setDureeConsultation(int dureeConsultation) {
-        this.dureeConsultation = dureeConsultation;
     }
 }
