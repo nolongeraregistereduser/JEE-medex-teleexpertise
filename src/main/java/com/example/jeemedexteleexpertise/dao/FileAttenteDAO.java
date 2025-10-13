@@ -2,6 +2,8 @@ package com.example.jeemedexteleexpertise.dao;
 
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import com.example.jeemedexteleexpertise.model.FileAttente;
 
 public class FileAttenteDAO {
 
