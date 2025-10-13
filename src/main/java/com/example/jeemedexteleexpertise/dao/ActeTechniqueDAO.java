@@ -2,11 +2,13 @@ package com.example.jeemedexteleexpertise.dao;
 
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import com.example.jeemedexteleexpertise.model.ActeTechnique;
 
-public class ActeTechniqueDAO {
+public class ActeTechniqueDAO<ActeTechnique> {
 
     @PersistenceContext
-    private entitymanager entitymanager;
+    private EntityManager entitymanager;
 
     @Transactional
     public void save(ActeTechnique acteTechnique) {
