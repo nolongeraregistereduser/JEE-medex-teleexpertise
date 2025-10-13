@@ -88,4 +88,11 @@ public class FileAttente {
                 ", status=" + status +
                 '}';
     }
+
+    public void setPatientId(Long patientId) {
+        if (this.patient == null) {
+            this.patient = new Patient();
+        }
+        this.patient.setId(patientId);
+    }
 }

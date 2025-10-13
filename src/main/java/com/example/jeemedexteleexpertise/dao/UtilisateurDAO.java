@@ -8,9 +8,11 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UtilisateurDAO {
+
 
     @PersistenceContext
     private EntityManager entityManager;
