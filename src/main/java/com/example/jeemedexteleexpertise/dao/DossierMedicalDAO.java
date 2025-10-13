@@ -6,7 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 public class DossierMedicalDAO {
-    
+
     @PersistenceContext
     private EntityManager entityManager;
 
