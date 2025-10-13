@@ -8,7 +8,7 @@ import com.example.jeemedexteleexpertise.model.ActeTechnique;
 public class ActeTechniqueDAO<ActeTechnique> {
 
     @PersistenceContext
-    private EntityManager entitymanager;
+    private EntityManager entityManager;
 
     @Transactional
     public void save(ActeTechnique acteTechnique) {

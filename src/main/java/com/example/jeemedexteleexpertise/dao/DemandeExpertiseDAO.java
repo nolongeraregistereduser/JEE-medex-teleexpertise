@@ -13,7 +13,7 @@ public class DemandeExpertiseDAO {
     @Transactional
     public void save(DemandeExpertise demandeExpertise) {
         entityManager.persist(demandeExpertise);}
-    
+
     @Transactional
     public void update(DemandeExpertise demandeExpertise) {
         entityManager.merge(demandeExpertise);}
