@@ -22,6 +22,7 @@ public class Consultation {
     @JoinColumn(name = "medecin_generaliste_id", nullable = false)
     private Generaliste medecinGeneraliste;
 
+
     @NotNull(message = "La date de consultation ne peut pas être vide")
     @Column(name = "date_consultation", nullable = false)
     private LocalDateTime dateConsultation;

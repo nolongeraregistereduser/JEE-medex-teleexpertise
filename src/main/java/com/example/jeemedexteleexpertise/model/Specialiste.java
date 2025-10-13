@@ -1,9 +1,9 @@
 package com.example.jeemedexteleexpertise.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("SPECIALISTE")
@@ -18,6 +18,13 @@ public class Specialiste extends Utilisateur {
 
     @Column(name = "duree_consultation")
     private int dureeConsultation = 30;
+
+    @OneToMany(mappedBy = "medecinSpecialiste", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Creneau> creneaux;
+
+    @OneToMany(mappedBy = "medecinSpecialiste", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DemandeExpertise> demandesExpertise;
+
 
     public Specialiste() {
         super();
