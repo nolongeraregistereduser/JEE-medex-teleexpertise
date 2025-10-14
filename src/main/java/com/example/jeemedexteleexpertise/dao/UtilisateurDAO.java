@@ -1,14 +1,11 @@
 package com.example.jeemedexteleexpertise.dao;
 
 import com.example.jeemedexteleexpertise.model.Utilisateur;
-import com.example.jeemedexteleexpertise.model.Role;
-import com.example.jeemedexteleexpertise.model.Specialite;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UtilisateurDAO {
@@ -45,4 +42,11 @@ public class UtilisateurDAO {
     }
 
 
+    public Utilisateur findByEmail(String email) {
+        TypedQuery<Utilisateur> query = entityManager.createQuery(
+                "SELECT u FROM Utilisateur u WHERE u.email = :email", Utilisateur.class);
+        query.setParameter("email", email);
+        List<Utilisateur> results = query.getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
 }

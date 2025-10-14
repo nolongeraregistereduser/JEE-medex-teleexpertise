@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityManager;
 import com.example.jeemedexteleexpertise.model.ActeTechnique;
 
-public class ActeTechniqueDAO<ActeTechnique> {
+public class ActeTechniqueDAO{
 
     @PersistenceContext
     private EntityManager entityManager;
