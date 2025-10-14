@@ -1,12 +1,11 @@
 package com.example.jeemedexteleexpertise.service;
+import jakarta.inject.Inject;
 
 public class DemandeExpertiseDAO {
 
+    @Inject
     private DemandeExpertiseDAO demandeExpertiseDAO;
 
-    public DemandeExpertiseDAO() {
-        this.demandeExpertiseDAO = new DemandeExpertiseDAO();
-    }
 
     public void saveDemandeExpertise() {
         demandeExpertiseDAO.saveDemandeExpertise();

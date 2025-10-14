@@ -2,14 +2,14 @@ package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.FileAttenteDAO;
 import com.example.jeemedexteleexpertise.model.FileAttente;
+import jakarta.inject.Inject;
 
 public class FileAttenteService {
 
+    @Inject
     private FileAttenteDAO fileAttenteDAO;
 
-    public FileAttenteService() {
-        this.fileAttenteDAO = new FileAttenteDAO();
-    }
+
 
     public void saveFileAttente(FileAttente fileAttente) {
         fileAttenteDAO.save(fileAttente);

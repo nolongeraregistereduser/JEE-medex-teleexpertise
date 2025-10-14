@@ -1,15 +1,14 @@
 package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.ActeTechniqueDAO;
+import jakarta.inject.Inject;
 
 
 public class ActTechniqueService {
 
+    @Inject
     private ActeTechniqueDAO acteTechniqueDAO;
 
-    public ActTechniqueService() {
-        this.acteTechniqueDAO = new ActeTechniqueDAO();
-    }
 
     public void saveActeTechnique(com.example.jeemedexteleexpertise.model.ActeTechnique acteTechnique) {
         acteTechniqueDAO.save(acteTechnique);

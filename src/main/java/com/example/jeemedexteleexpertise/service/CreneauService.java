@@ -2,14 +2,14 @@ package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.CreneauDAO;
 import com.example.jeemedexteleexpertise.model.Creneau;
+import jakarta.inject.Inject;
 
 public class CreneauService {
 
+    @Inject
     private CreneauDAO creneauDAO;
 
-    public CreneauService() {
-        this.creneauDAO = new CreneauDAO();
-    }
+
 
     public void saveCreneau(Creneau creneau) {
         creneauDAO.save(creneau);

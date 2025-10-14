@@ -2,14 +2,13 @@ package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.PatientDAO;
 import com.example.jeemedexteleexpertise.model.Patient;
+import jakarta.inject.Inject;
 
 public class PatientService {
 
+    @Inject
     private PatientDAO patientDAO;
 
-    public PatientService(PatientDAO patientDAO) {
-        this.patientDAO = new PatientDAO();
-    }
 
     // crud
 

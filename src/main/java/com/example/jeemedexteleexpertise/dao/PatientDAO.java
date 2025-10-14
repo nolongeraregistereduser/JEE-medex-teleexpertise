@@ -5,7 +5,6 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-
 import java.util.List;
 
 @Stateless
@@ -39,15 +38,6 @@ public class PatientDAO {
     public List<Patient> findAll() {
         return entityManager.createQuery("SELECT p FROM Patient p", Patient.class).getResultList();
     }
-
-
-    public Patient findByEmail(String email) {
-        List<Patient> results = entityManager.createQuery("SELECT p FROM Patient p WHERE p.email = :email", Patient.class)
-                .setParameter("email", email)
-                .getResultList();
-        return results.isEmpty() ? null : results.get(0);
-    }
-
 
 
 

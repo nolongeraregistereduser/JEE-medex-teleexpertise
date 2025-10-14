@@ -9,7 +9,6 @@ import com.example.jeemedexteleexpertise.model.SignesVitaux;
 
 
 @Stateless
-
 public class SignesVitauxDAO {
 
     @PersistenceContext

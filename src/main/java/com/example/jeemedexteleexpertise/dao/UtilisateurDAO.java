@@ -8,9 +8,9 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
 
-@Stateless
 import java.util.List;
 
+@Stateless
 public class UtilisateurDAO {
 
 

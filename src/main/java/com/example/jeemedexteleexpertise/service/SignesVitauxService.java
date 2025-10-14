@@ -1,14 +1,13 @@
 package com.example.jeemedexteleexpertise.service;
 import com.example.jeemedexteleexpertise.dao.SignesVitauxDAO;
 import com.example.jeemedexteleexpertise.model.SignesVitaux;
+import jakarta.inject.Inject;
 
 public class SignesVitauxService {
 
+    @Inject
     private SignesVitauxDAO signesVitauxDAO;
 
-    public SignesVitauxService() {
-        this.signesVitauxDAO = new SignesVitauxDAO();
-    }
 
     public void saveSignesVitaux(SignesVitaux signesVitaux) {
         signesVitauxDAO.save(signesVitaux);

@@ -2,17 +2,16 @@ package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.DossierMedicalDAO;
 import com.example.jeemedexteleexpertise.model.DossierMedical;
-
+import jakarta.inject.Inject;
 
 
 public class DossierMedicalService {
 
 
+    @Inject
     private DossierMedicalDAO dossierMedicalDAO;
 
-    public DossierMedicalService() {
-        this.dossierMedicalDAO = new DossierMedicalDAO();
-    }
+
 
     public void saveDossierMedical(DossierMedical dossierMedical) {
         dossierMedicalDAO.save(dossierMedical);
