@@ -5,29 +5,39 @@
              https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
 
-    <persistence-unit name="medexPU">
+    <persistence-unit name="medex-pu" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
+        <!-- Entity classes that map to database tables -->
+        <class>com.example.jeemedexteleexpertise.model.Generaliste</class>
+        <class>com.example.jeemedexteleexpertise.model.Specialiste</class>
+        <class>com.example.jeemedexteleexpertise.model.Infermier</class>
+        <class>com.example.jeemedexteleexpertise.model.Patient</class>
+        <class>com.example.jeemedexteleexpertise.model.DossierMedical</class>
+        <class>com.example.jeemedexteleexpertise.model.Consultation</class>
+        <class>com.example.jeemedexteleexpertise.model.ActeTechnique</class>
+        <class>com.example.jeemedexteleexpertise.model.SignesVitaux</class>
+        <class>com.example.jeemedexteleexpertise.model.Creneau</class>
+        <class>com.example.jeemedexteleexpertise.model.DemandeExpertise</class>
+        <class>com.example.jeemedexteleexpertise.model.FileAttente</class>
+
         <properties>
-            <!-- Database connection settings -->
+            <!-- Database connection properties -->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/med"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/medex_test"/>
             <property name="jakarta.persistence.jdbc.user" value="postgres"/>
             <property name="jakarta.persistence.jdbc.password" value="root"/>
 
-            <!-- Hibernate settings -->
+            <!-- Hibernate properties -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.use_sql_comments" value="true"/>
 
             <!-- Connection pool settings -->
-            <property name="hibernate.c3p0.min_size" value="5"/>
-            <property name="hibernate.c3p0.max_size" value="20"/>
-            <property name="hibernate.c3p0.timeout" value="300"/>
-            <property name="hibernate.c3p0.max_statements" value="50"/>
-            <property name="hibernate.c3p0.idle_test_period" value="3000"/>
+            <property name="hibernate.connection.pool_size" value="10"/>
+            <property name="hibernate.connection.autocommit" value="false"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -1,5 +1,7 @@
 package com.example.jeemedexteleexpertise.servlet;
 
+import com.example.jeemedexteleexpertise.service.UtilisateurService;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,6 +11,9 @@ import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
+
+    @Inject
+    private UtilisateurService utilisateurService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -24,7 +29,7 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // For now, simple validation - we'll improve this later
+        // For now, simple validation we'll improve this later
         if ("admin@medex.com".equals(email) && "admin123".equals(password)) {
             response.sendRedirect("dashboard");
         } else {

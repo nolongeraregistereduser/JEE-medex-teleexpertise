@@ -1,7 +1,7 @@
 package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.UtilisateurDAO;
-import com.example.jeemedexteleexpertise.model.Utilisateur;
+import com.example.jeemedexteleexpertise.model.*;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
@@ -32,11 +32,40 @@ public class UtilisateurService {
     }
 
     public Utilisateur authentifier(String email, String motDePasse) {
-        Utilisateur utilisateur = utilisateurDAO.findByEmail(email);
-        if (utilisateur != null && utilisateur.getMotDePasse().equals(motDePasse)) {
-            return utilisateur;
+
+        if ("generaliste@medex.com".equals(email) && "password".equals(motDePasse)) {
+            Generaliste user = new Generaliste();
+            user.setId(0L);
+            user.setNom("Generaliste");
+            user.setPrenom("Generaliste");
+            user.setEmail(email);
+            user.setMotDePasse(motDePasse);
+            user.setRole(Role.GENERALISTE);
+            return user;
+        } else if ("specialiste@medex.com".equals(email) && "password".equals(motDePasse)) {
+            Specialiste user = new Specialiste();
+            user.setId(1L);
+            user.setEmail(email);
+            user.setNom("Specialiste");
+            user.setPrenom("Specialiste");
+            user.setMotDePasse(motDePasse);
+
+            user.setRole(Role.SPECIALISTE);
+            return user;
+
+        } else if ("infermier@medex.com".equals(email) && "password".equals(motDePasse)) {
+            Infermier user = new Infermier();
+            user.setId(2L);
+            user.setEmail(email);
+            user.setNom("Infermier");
+            user.setPrenom("Infermier");
+            user.setMotDePasse(motDePasse);
+
+            user.setRole(Role.INFERMIER);
+            return user;
         }
-        return null;
+        return null; // auth faild
+
     }
 
     public boolean emailExists(String email) {

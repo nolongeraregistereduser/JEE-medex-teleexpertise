@@ -95,6 +95,12 @@ public abstract class Utilisateur {
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 
+    // adding setrole function
+
+    public void setRole(Role role) {
+        // This method can be overridden in subclasses if needed
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
