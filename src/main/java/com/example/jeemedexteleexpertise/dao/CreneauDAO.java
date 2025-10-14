@@ -1,10 +1,12 @@
 package com.example.jeemedexteleexpertise.dao;
 
+import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import com.example.jeemedexteleexpertise.model.Creneau;
 
+@Stateless
 public class CreneauDAO {
 
     @PersistenceContext

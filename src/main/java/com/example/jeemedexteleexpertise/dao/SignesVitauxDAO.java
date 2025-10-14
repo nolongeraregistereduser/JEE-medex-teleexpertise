@@ -1,10 +1,14 @@
 package com.example.jeemedexteleexpertise.dao;
 
+import jakarta.ejb.Stateless;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import com.example.jeemedexteleexpertise.model.SignesVitaux;
+
+
+@Stateless
 
 public class SignesVitauxDAO {
 

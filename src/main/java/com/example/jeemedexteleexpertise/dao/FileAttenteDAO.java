@@ -1,10 +1,13 @@
 package com.example.jeemedexteleexpertise.dao;
 
+import jakarta.ejb.Stateless;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityManager;
 import com.example.jeemedexteleexpertise.model.FileAttente;
 
+
+@Stateless
 public class FileAttenteDAO {
 
 

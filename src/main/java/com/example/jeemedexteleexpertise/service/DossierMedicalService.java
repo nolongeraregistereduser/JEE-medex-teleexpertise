@@ -3,6 +3,8 @@ package com.example.jeemedexteleexpertise.service;
 import com.example.jeemedexteleexpertise.dao.DossierMedicalDAO;
 import com.example.jeemedexteleexpertise.model.DossierMedical;
 
+
+
 public class DossierMedicalService {
 
 

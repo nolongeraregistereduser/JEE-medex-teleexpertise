@@ -60,6 +60,13 @@
             <version>6.2.7.Final</version>
         </dependency>
 
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>10.0.0</version> <!-- or 9.1.0 if using TomEE 9 -->
+            <scope>provided</scope>
+        </dependency>
+
         <!-- PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>

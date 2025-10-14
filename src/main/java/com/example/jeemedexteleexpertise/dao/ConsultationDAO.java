@@ -1,13 +1,14 @@
 package com.example.jeemedexteleexpertise.dao;
 
 import com.example.jeemedexteleexpertise.model.Consultation;
+import jakarta.ejb.Stateless;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import com.example.jeemedexteleexpertise.model.StatusConsultation;
 
-
+@Stateless
 public class ConsultationDAO {
 
     @PersistenceContext
