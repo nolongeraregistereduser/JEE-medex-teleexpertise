@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
-         version="6.0">
-
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
 
     <display-name>JEE-medex-teleexpertise</display-name>
-    <description> Medical Tele-Expertise System For Coordination Between Generalists and Specialists</description>
+    <description>Medical Tele-Expertise System For Coordination Between Generalists and Specialists</description>
+
     <welcome-file-list>
-        <welcome-file>jsp/login.jps</welcome-file>
+        <welcome-file>login</welcome-file>
     </welcome-file-list>
 
-    <!-- Session configuration : we configure it ( andiro timeout 1hour-->
+    <!-- Session configuration: timeout 1 hour -->
     <session-config>
         <session-timeout>60</session-timeout> <!-- 60 minutes -->
         <cookie-config>
             <http-only>true</http-only>
-            <secure>false</secure> <!-- Set to true in prod  with HTTPS -->
+            <secure>false</secure> <!-- Set to true in prod with HTTPS -->
         </cookie-config>
     </session-config>
+
     <error-page>
         <error-code>404</error-code>
         <location>/jsp/error/404.jsp</location>
     </error-page>
-
-    <error-page>
-        <error-code>500</error-code>
-        <location>/jsp/error/500.jsp</location>
-
 
 </web-app>

@@ -1,9 +1,10 @@
 package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.ActeTechniqueDAO;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
-
+@Stateless
 public class ActTechniqueService {
 
     @Inject

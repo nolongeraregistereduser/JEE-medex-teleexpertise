@@ -2,8 +2,10 @@ package com.example.jeemedexteleexpertise.service;
 
 import com.example.jeemedexteleexpertise.dao.PatientDAO;
 import com.example.jeemedexteleexpertise.model.Patient;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
+@Stateless
 public class PatientService {
 
     @Inject
