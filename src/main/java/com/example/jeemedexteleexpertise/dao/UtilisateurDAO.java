@@ -2,54 +2,31 @@ package com.example.jeemedexteleexpertise.dao;
 
 import com.example.jeemedexteleexpertise.model.Utilisateur;
 import jakarta.ejb.Stateless;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
-
 
 import java.util.List;
 
 @Stateless
-public class UtilisateurDAO {
+public class UtilisateurDAO extends BaseDAO<Utilisateur, Long> {
 
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Transactional
-    public void save(Utilisateur utilisateur) {
-        entityManager.persist(utilisateur);
-    }
-
-    @Transactional
-    public void update(Utilisateur utilisateur) {
-        entityManager.merge(utilisateur);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, id);
-        if (utilisateur != null) {
-            entityManager.remove(utilisateur);
-        }
-    }
-
-    public Utilisateur findById(Long id) {
-        return entityManager.find(Utilisateur.class, id);
-    }
-
-    public List<Utilisateur> findAll() {
-        return entityManager.createQuery("SELECT u FROM Utilisateur u", Utilisateur.class)
-                .getResultList();
+    public UtilisateurDAO() {
+        super(Utilisateur.class);
     }
 
 
     public Utilisateur findByEmail(String email) {
-        TypedQuery<Utilisateur> query = entityManager.createQuery(
-                "SELECT u FROM Utilisateur u WHERE u.email = :email", Utilisateur.class);
-        query.setParameter("email", email);
-        List<Utilisateur> results = query.getResultList();
-        return results.isEmpty() ? null : results.get(0);
+        String jpql = "SELECT u FROM Utilisateur u WHERE u.email = :email";
+        return executeSingleResultQuery(jpql, "email", email);
+    }
+
+
+    public List<Utilisateur> findActiveUsers() {
+        String jpql = "SELECT u FROM Utilisateur u WHERE u.actif = true";
+        return executeNamedQuery(jpql, "actif", true);
+    }
+
+
+    public List<Utilisateur> findByRole(String role) {
+        String jpql = "SELECT u FROM Utilisateur u WHERE TYPE(u) = :role";
+        return executeNamedQuery(jpql, "role", role);
     }
 }

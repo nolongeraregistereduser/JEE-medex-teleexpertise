@@ -1,0 +1,119 @@
+package com.example.jeemedexteleexpertise.dao;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+
+public abstract class BaseDAO<T, ID> {
+
+    @PersistenceContext
+    protected EntityManager entityManager;
+
+    private final Class<T> entityClass;
+
+    public BaseDAO(Class<T> entityClass) {
+        this.entityClass = entityClass;
+    }
+
+
+    @Transactional
+    public void save(T entity) {
+        entityManager.persist(entity);
+    }
+
+
+    @Transactional
+    public T update(T entity) {
+        return entityManager.merge(entity);
+    }
+
+
+    @Transactional
+    public void deleteById(ID id) {
+        T entity = findById(id);
+        if (entity != null) {
+            entityManager.remove(entity);
+        }
+    }
+
+
+    @Transactional
+    public void deleteEntity(T entity) {
+        if (entity != null) {
+            entityManager.remove(entity);
+        }
+    }
+
+
+    public T findById(ID id) {
+        return entityManager.find(entityClass, id);
+    }
+
+
+    public Optional<T> findByIdOptional(ID id) {
+        return Optional.ofNullable(findById(id));
+    }
+
+
+    public List<T> findAll() {
+        String queryString = "SELECT e FROM " + entityClass.getSimpleName() + " e";
+        return entityManager.createQuery(queryString, entityClass).getResultList();
+    }
+
+
+    public long count() {
+        String queryString = "SELECT COUNT(e) FROM " + entityClass.getSimpleName() + " e";
+        return entityManager.createQuery(queryString, Long.class).getSingleResult();
+    }
+
+
+    public boolean existsById(ID id) {
+        return findById(id) != null;
+    }
+
+
+    public List<T> findWithPagination(int offset, int limit) {
+        String queryString = "SELECT e FROM " + entityClass.getSimpleName() + " e";
+        return entityManager.createQuery(queryString, entityClass)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+
+    protected List<T> executeQuery(String jpql, Object... parameters) {
+        TypedQuery<T> query = entityManager.createQuery(jpql, entityClass);
+        for (int i = 0; i < parameters.length; i++) {
+            query.setParameter(i + 1, parameters[i]);
+        }
+        return query.getResultList();
+    }
+
+
+    protected List<T> executeNamedQuery(String jpql, String paramName, Object paramValue) {
+        TypedQuery<T> query = entityManager.createQuery(jpql, entityClass);
+        query.setParameter(paramName, paramValue);
+        return query.getResultList();
+    }
+
+
+    protected T executeSingleResultQuery(String jpql, String paramName, Object paramValue) {
+        List<T> results = executeNamedQuery(jpql, paramName, paramValue);
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+
+    protected Class<T> getEntityClass() {
+        return entityClass;
+    }
+
+
+    protected EntityManager getEntityManager() {
+        return entityManager;
+    }
+}

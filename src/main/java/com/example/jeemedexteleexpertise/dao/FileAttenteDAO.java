@@ -1,40 +1,48 @@
 package com.example.jeemedexteleexpertise.dao;
 
-import jakarta.ejb.Stateless;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import jakarta.persistence.EntityManager;
 import com.example.jeemedexteleexpertise.model.FileAttente;
+import com.example.jeemedexteleexpertise.model.StatusFileAttente;
+import jakarta.ejb.Stateless;
 
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Stateless
-public class FileAttenteDAO {
+public class FileAttenteDAO extends BaseDAO<FileAttente, Long> {
 
-
-    @PersistenceContext
-
-    private EntityManager entityManager;
-
-    @Transactional
-    public void save(FileAttente fileAttente) {
-        entityManager.persist(fileAttente);
-    }
-
-    @Transactional
-    public void update(FileAttente fileAttente) {
-        entityManager.merge(fileAttente);}
-
-    @Transactional
-    public void delete(Long id) {
-        FileAttente fileAttente = entityManager.find(FileAttente.class, id);
-        if (fileAttente != null) {
-            entityManager.remove(fileAttente);
-        }
+    public FileAttenteDAO() {
+        super(FileAttente.class);
     }
 
 
+    public List<FileAttente> findByStatus(StatusFileAttente status) {
+        String jpql = "SELECT f FROM FileAttente f WHERE f.status = :status ORDER BY f.heureArrivee ASC";
+        return executeNamedQuery(jpql, "status", status);
+    }
 
-    public FileAttente findById(Long id) {
-        return entityManager.find(FileAttente.class, id);
+
+    public List<FileAttente> findCurrentQueue() {
+        String jpql = "SELECT f FROM FileAttente f WHERE f.status = :status ORDER BY f.heureArrivee ASC";
+        return executeNamedQuery(jpql, "status", StatusFileAttente.EN_ATTENTE);
+    }
+
+
+    public List<FileAttente> findTodaysQueue() {
+        String jpql = "SELECT f FROM FileAttente f WHERE DATE(f.heureArrivee) = CURRENT_DATE ORDER BY f.heureArrivee ASC";
+        return getEntityManager().createQuery(jpql, FileAttente.class).getResultList();
+    }
+
+
+    public FileAttente getNextPatientInQueue() {
+        List<FileAttente> queue = findCurrentQueue();
+        return queue.isEmpty() ? null : queue.get(0);
+    }
+
+
+    public long countPatientsWaiting() {
+        String jpql = "SELECT COUNT(f) FROM FileAttente f WHERE f.status = :status";
+        return getEntityManager().createQuery(jpql, Long.class)
+                .setParameter("status", StatusFileAttente.EN_ATTENTE)
+                .getSingleResult();
     }
 }

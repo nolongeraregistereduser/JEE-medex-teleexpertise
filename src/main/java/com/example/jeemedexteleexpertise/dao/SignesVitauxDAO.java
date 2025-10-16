@@ -1,40 +1,34 @@
 package com.example.jeemedexteleexpertise.dao;
 
-import jakarta.ejb.Stateless;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import com.example.jeemedexteleexpertise.model.SignesVitaux;
+import jakarta.ejb.Stateless;
 
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Stateless
-public class SignesVitauxDAO {
+public class SignesVitauxDAO extends BaseDAO<SignesVitaux, Long> {
 
-    @PersistenceContext
-
-    private EntityManager entityManager;
-
-    @Transactional
-    public void save(SignesVitaux signesVitaux) {
-        entityManager.persist(signesVitaux);
+    public SignesVitauxDAO() {
+        super(SignesVitaux.class);
     }
 
-    @Transactional
-    public void update(SignesVitaux signesVitaux) {
-        entityManager.merge(signesVitaux);
+
+    public List<SignesVitaux> findByPatientId(Long patientId) {
+        String jpql = "SELECT s FROM SignesVitaux s WHERE s.patient.id = :patientId ORDER BY s.dateMesure DESC";
+        return executeNamedQuery(jpql, "patientId", patientId);
     }
 
-    @Transactional
-    public void delete(Long id) {
-        SignesVitaux signesVitaux = entityManager.find(SignesVitaux.class, id);
-        if (signesVitaux != null) {
-            entityManager.remove(signesVitaux);}}
+
+    public SignesVitaux findLatestByPatientId(Long patientId) {
+        String jpql = "SELECT s FROM SignesVitaux s WHERE s.patient.id = :patientId ORDER BY s.dateMesure DESC";
+        List<SignesVitaux> results = executeNamedQuery(jpql, "patientId", patientId);
+        return results.isEmpty() ? null : results.get(0);
+    }
 
 
-    public SignesVitaux findById(Long id) {
-        return entityManager.find(SignesVitaux.class, id);}
-
-
-
+    public List<SignesVitaux> findTodaysSignesVitaux() {
+        String jpql = "SELECT s FROM SignesVitaux s WHERE DATE(s.dateMesure) = CURRENT_DATE";
+        return getEntityManager().createQuery(jpql, SignesVitaux.class).getResultList();
+    }
 }

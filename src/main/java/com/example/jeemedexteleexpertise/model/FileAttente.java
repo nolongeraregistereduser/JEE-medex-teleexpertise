@@ -16,7 +16,7 @@ public class FileAttente {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @NotNull(message = "La date d'arrivée ne peut pas être vide")
+    @NotNull
     @Column(name = "date_arrivee", nullable = false)
     private LocalDateTime dateArrivee;
 
@@ -40,7 +40,6 @@ public class FileAttente {
         }
     }
 
-    // Constructors
     public FileAttente() {}
 
     public FileAttente(Patient patient) {
@@ -50,19 +49,6 @@ public class FileAttente {
         this.priorite = 0;
     }
 
-    public FileAttente(Patient patient, Integer priorite) {
-        this.patient = patient;
-        this.dateArrivee = LocalDateTime.now();
-        this.status = StatusFileAttente.EN_ATTENTE;
-        this.priorite = priorite;
-    }
-
-    // Business methods
-    public void priseEnCharge() {
-        this.status = StatusFileAttente.PRIS_EN_CHARGE;
-    }
-
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -72,27 +58,12 @@ public class FileAttente {
     public LocalDateTime getDateArrivee() { return dateArrivee; }
     public void setDateArrivee(LocalDateTime dateArrivee) { this.dateArrivee = dateArrivee; }
 
+    public LocalDateTime getHeureArrivee() { return dateArrivee; }
+    public void setHeureArrivee(LocalDateTime heureArrivee) { this.dateArrivee = heureArrivee; }
+
     public Integer getPriorite() { return priorite; }
     public void setPriorite(Integer priorite) { this.priorite = priorite; }
 
     public StatusFileAttente getStatus() { return status; }
     public void setStatus(StatusFileAttente status) { this.status = status; }
-
-    @Override
-    public String toString() {
-        return "FileAttente{" +
-                "id=" + id +
-                ", patient=" + (patient != null ? patient.getNomComplet() : null) +
-                ", dateArrivee=" + dateArrivee +
-                ", priorite=" + priorite +
-                ", status=" + status +
-                '}';
-    }
-
-    public void setPatientId(Long patientId) {
-        if (this.patient == null) {
-            this.patient = new Patient();
-        }
-        this.patient.setId(patientId);
-    }
 }

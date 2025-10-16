@@ -1,36 +1,34 @@
 package com.example.jeemedexteleexpertise.dao;
 
-import jakarta.ejb.Stateless;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import jakarta.persistence.EntityManager;
 import com.example.jeemedexteleexpertise.model.ActeTechnique;
+import com.example.jeemedexteleexpertise.model.TypeActe;
+import jakarta.ejb.Stateless;
 
+import java.util.List;
 
 @Stateless
-public class ActeTechniqueDAO{
+public class ActeTechniqueDAO extends BaseDAO<ActeTechnique, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Transactional
-    public void save(ActeTechnique acteTechnique) {
-        entityManager.persist(acteTechnique);
+    public ActeTechniqueDAO() {
+        super(ActeTechnique.class);
     }
 
-    @Transactional
-    public void update(ActeTechnique acteTechnique) {
-        entityManager.merge(acteTechnique);}
-
-    @Transactional
-    public void delete(Long id) {
-        ActeTechnique acteTechnique = entityManager.find(ActeTechnique.class, id);
-        if (acteTechnique != null) {
-            entityManager.remove(acteTechnique);}}
-
-    public ActeTechnique findById(Long id) {
-        return entityManager.find(ActeTechnique.class, id);}
+    public List<ActeTechnique> findByType(TypeActe type) {
+        String jpql = "SELECT a FROM ActeTechnique a WHERE a.type = :type";
+        return executeNamedQuery(jpql, "type", type);
+    }
 
 
+    public List<ActeTechnique> findByConsultationId(Long consultationId) {
+        String jpql = "SELECT a FROM ActeTechnique a WHERE a.consultation.id = :consultationId";
+        return executeNamedQuery(jpql, "consultationId", consultationId);
+    }
 
+
+    public Double calculateTotalCostForConsultation(Long consultationId) {
+        String jpql = "SELECT SUM(a.cout) FROM ActeTechnique a WHERE a.consultation.id = :consultationId";
+        return getEntityManager().createQuery(jpql, Double.class)
+                .setParameter("consultationId", consultationId)
+                .getSingleResult();
+    }
 }

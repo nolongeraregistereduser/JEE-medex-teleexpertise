@@ -11,24 +11,17 @@ import java.util.List;
 
 public class AuthService {
 
-    /**
-     * Hash a password using BCrypt
-     */
+
     public String hashPassword(String plainPassword) {
         return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
     }
 
-    /**
-     * Verify a password against its hash
-     */
+
     public boolean verifyPassword(String plainPassword, String hashedPassword) {
         return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 
-    /**
-     * Authenticate a user with email and password
-     * Returns the user if credentials are valid, null otherwise
-     */
+
     public Utilisateur authenticate(String email, String password) {
         EntityManagerFactory emf = null;
         EntityManager em = null;
@@ -68,9 +61,6 @@ public class AuthService {
         }
     }
 
-    /**
-     * Get dashboard URL based on user role
-     */
     public String getDashboardUrl(Utilisateur user) {
         switch (user.getRole()) {
             case GENERALISTE:

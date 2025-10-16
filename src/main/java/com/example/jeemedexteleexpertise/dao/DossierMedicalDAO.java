@@ -2,35 +2,31 @@ package com.example.jeemedexteleexpertise.dao;
 
 import com.example.jeemedexteleexpertise.model.DossierMedical;
 import jakarta.ejb.Stateless;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+
+import java.util.List;
 
 @Stateless
-public class DossierMedicalDAO {
+public class DossierMedicalDAO extends BaseDAO<DossierMedical, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Transactional
-    public void save(DossierMedical dossierMedical) {
-        entityManager.persist(dossierMedical);
+    public DossierMedicalDAO() {
+        super(DossierMedical.class);
     }
 
-    @Transactional
-    public void update(DossierMedical dossierMedical) {
-        entityManager.merge(dossierMedical);}
 
-    @Transactional
-    public void delete(Long id) {
-        DossierMedical dossierMedical = entityManager.find(DossierMedical.class, id);
-        if (dossierMedical != null) {
-            entityManager.remove(dossierMedical);
-        }
+    public DossierMedical findByPatientId(Long patientId) {
+        String jpql = "SELECT d FROM DossierMedical d WHERE d.patient.id = :patientId";
+        return executeSingleResultQuery(jpql, "patientId", patientId);
     }
 
-    public DossierMedical findById(Long id) {
-        return entityManager.find(DossierMedical.class, id);
+
+    public List<DossierMedical> findByAllergies(String allergie) {
+        String jpql = "SELECT d FROM DossierMedical d WHERE d.allergies LIKE :allergie";
+        return executeNamedQuery(jpql, "allergie", "%" + allergie + "%");
     }
 
+
+    public List<DossierMedical> findByAntecedents(String antecedent) {
+        String jpql = "SELECT d FROM DossierMedical d WHERE d.antecedents LIKE :antecedent";
+        return executeNamedQuery(jpql, "antecedent", "%" + antecedent + "%");
+    }
 }

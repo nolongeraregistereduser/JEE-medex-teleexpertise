@@ -1,62 +1,44 @@
 package com.example.jeemedexteleexpertise.dao;
 
 import com.example.jeemedexteleexpertise.model.Consultation;
-import jakarta.ejb.Stateless;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import jakarta.persistence.EntityManager;
-import java.util.List;
 import com.example.jeemedexteleexpertise.model.StatusConsultation;
+import jakarta.ejb.Stateless;
+
+import java.util.List;
 
 @Stateless
-public class ConsultationDAO {
+public class ConsultationDAO extends BaseDAO<Consultation, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-    @Transactional
-    public void save(Consultation consultation) {
-        entityManager.persist(consultation);
-    }
-
-    @Transactional
-    public void update(Consultation consultation) {
-        entityManager.merge(consultation);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        Consultation consultation = entityManager.find(Consultation.class, id);
-        if (consultation != null) {
-            entityManager.remove(consultation);
-        }
-    }
-
-    public Consultation findById(Long id) {
-        return entityManager.find(Consultation.class, id);
-    }
-
-    public List<Consultation> findAll() {
-        return entityManager.createQuery("SELECT c FROM Consultation c", Consultation.class).getResultList();
-    }
-
-    public List<Consultation> findByPatientId(Long patientId) {
-        return entityManager.createQuery("SELECT c FROM Consultation c WHERE c.patient.id = :patientId", Consultation.class)
-                .setParameter("patientId", patientId)
-                .getResultList();
-    }
-
-    public List<Consultation> findByMedecinId(Long medecinId) {
-        return entityManager.createQuery("SELECT c FROM Consultation c WHERE c.medecin.id = :medecinId", Consultation.class)
-                .setParameter("medecinId", medecinId)
-                .getResultList();
+    public ConsultationDAO() {
+        super(Consultation.class);
     }
 
     public List<Consultation> findByStatus(StatusConsultation status) {
-        return entityManager.createQuery("SELECT c FROM Consultation c WHERE c.status = :status", Consultation.class)
-                .setParameter("status", status)
-                .getResultList();
+        String jpql = "SELECT c FROM Consultation c WHERE c.status = :status";
+        return executeNamedQuery(jpql, "status", status);
     }
 
 
+    public List<Consultation> findByPatientId(Long patientId) {
+        String jpql = "SELECT c FROM Consultation c WHERE c.patient.id = :patientId";
+        return executeNamedQuery(jpql, "patientId", patientId);
+    }
 
+
+    public List<Consultation> findByGeneralisteId(Long generalisteId) {
+        String jpql = "SELECT c FROM Consultation c WHERE c.medecinGeneraliste.id = :generalisteId";
+        return executeNamedQuery(jpql, "generalisteId", generalisteId);
+    }
+
+
+    public List<Consultation> findConsultationsAwaitingSpecialistAdvice() {
+        String jpql = "SELECT c FROM Consultation c WHERE c.status = :status";
+        return executeNamedQuery(jpql, "status", StatusConsultation.EN_ATTENTE_AVIS_SPECIALISTE);
+    }
+
+
+    public List<Consultation> findTodaysConsultations() {
+        String jpql = "SELECT c FROM Consultation c WHERE DATE(c.dateConsultation) = CURRENT_DATE";
+        return getEntityManager().createQuery(jpql, Consultation.class).getResultList();
+    }
 }

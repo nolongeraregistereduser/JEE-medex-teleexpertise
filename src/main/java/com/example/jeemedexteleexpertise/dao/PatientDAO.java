@@ -2,43 +2,40 @@ package com.example.jeemedexteleexpertise.dao;
 
 import com.example.jeemedexteleexpertise.model.Patient;
 import jakarta.ejb.Stateless;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+
 import java.util.List;
 
 @Stateless
-public class PatientDAO {
-    @PersistenceContext
-    private EntityManager entityManager;
+public class PatientDAO extends BaseDAO<Patient, Long> {
 
-    @Transactional
-    public void save(Patient patient) {
-        entityManager.persist(patient);
-    }
-
-    @Transactional
-    public void update(Patient patient) {
-        entityManager.merge(patient);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        Patient patient = entityManager.find(Patient.class, id);
-        if (patient != null) {
-            entityManager.remove(patient);
-        }
+    public PatientDAO() {
+        super(Patient.class);
     }
 
 
-    public Patient findById(Long id) {
-        return entityManager.find(Patient.class, id);
-    }
-
-    public List<Patient> findAll() {
-        return entityManager.createQuery("SELECT p FROM Patient p", Patient.class).getResultList();
+    public Patient findByNumeroSecuriteSociale(String numeroSecuriteSociale) {
+        String jpql = "SELECT p FROM Patient p WHERE p.numeroSecuriteSociale = :numero";
+        return executeSingleResultQuery(jpql, "numero", numeroSecuriteSociale);
     }
 
 
+    public List<Patient> findByNomAndPrenom(String nom, String prenom) {
+        String jpql = "SELECT p FROM Patient p WHERE p.nom = :nom AND p.prenom = :prenom";
+        return getEntityManager().createQuery(jpql, Patient.class)
+                .setParameter("nom", nom)
+                .setParameter("prenom", prenom)
+                .getResultList();
+    }
 
+
+    public List<Patient> findPatientsRegisteredToday() {
+        String jpql = "SELECT p FROM Patient p WHERE DATE(p.dateCreation) = CURRENT_DATE";
+        return getEntityManager().createQuery(jpql, Patient.class).getResultList();
+    }
+
+
+    public List<Patient> searchByName(String searchTerm) {
+        String jpql = "SELECT p FROM Patient p WHERE LOWER(p.nom) LIKE LOWER(:term) OR LOWER(p.prenom) LIKE LOWER(:term)";
+        return executeNamedQuery(jpql, "term", "%" + searchTerm + "%");
+    }
 }
