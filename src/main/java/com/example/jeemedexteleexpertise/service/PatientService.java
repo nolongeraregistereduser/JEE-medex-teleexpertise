@@ -28,24 +28,9 @@ public class PatientService extends BaseService<Patient, Long> {
         if (patient.getPrenom() == null || patient.getPrenom().trim().isEmpty()) {
             throw new IllegalArgumentException("Patient first name is required");
         }
-        if (patient.getNumeroSecuriteSociale() == null || patient.getNumeroSecuriteSociale().trim().isEmpty()) {
-            throw new IllegalArgumentException("Security number is required");
-        }
         if (patient.getDateNaissance() == null) {
             throw new IllegalArgumentException("Birth date is required");
         }
-
-        // Check if security number already exists (for new patients)
-        if (patient.getId() == null) {
-            Patient existingPatient = patientDAO.findByNumeroSecuriteSociale(patient.getNumeroSecuriteSociale());
-            if (existingPatient != null) {
-                throw new IllegalArgumentException("Social security number already exists");
-            }
-        }
-    }
-
-    public Patient findByNumeroSecuriteSociale(String numeroSecuriteSociale) {
-        return patientDAO.findByNumeroSecuriteSociale(numeroSecuriteSociale);
     }
 
     public List<Patient> findByNomAndPrenom(String nom, String prenom) {

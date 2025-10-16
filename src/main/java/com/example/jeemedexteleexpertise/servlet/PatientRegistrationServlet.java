@@ -1,8 +1,7 @@
 package com.example.jeemedexteleexpertise.servlet;
 
 import com.example.jeemedexteleexpertise.model.*;
-import com.example.jeemedexteleexpertise.service.*;
-import jakarta.inject.Inject;
+import com.example.jeemedexteleexpertise.dao.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,23 +11,10 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet("/infirmier/patient-registration")
 public class PatientRegistrationServlet extends HttpServlet {
-
-    @Inject
-    private PatientService patientService;
-
-    @Inject
-    private DossierMedicalService dossierMedicalService;
-
-    @Inject
-    private SignesVitauxService signesVitauxService;
-
-    @Inject
-    private FileAttenteService fileAttenteService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -77,20 +63,34 @@ public class PatientRegistrationServlet extends HttpServlet {
     private void handlePatientSearch(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String numSecu = request.getParameter("numSecu");
+        String nom = request.getParameter("nom");
+        String prenom = request.getParameter("prenom");
 
-        if (numSecu != null && !numSecu.trim().isEmpty()) {
-            Patient patient = patientService.findByNumeroSecuriteSociale(numSecu.trim());
+        if ((nom != null && !nom.trim().isEmpty()) || (prenom != null && !prenom.trim().isEmpty())) {
+            PatientDAO patientDAO = new PatientDAO();
+            List<Patient> patients;
 
-            if (patient != null) {
-                request.setAttribute("patient", patient);
+            if (nom != null && !nom.trim().isEmpty() && prenom != null && !prenom.trim().isEmpty()) {
+                patients = patientDAO.findByNomAndPrenom(nom.trim(), prenom.trim());
+            } else {
+                String searchTerm = nom != null && !nom.trim().isEmpty() ? nom.trim() : prenom.trim();
+                patients = patientDAO.searchByName(searchTerm);
+            }
+
+            if (!patients.isEmpty()) {
+                request.setAttribute("patients", patients);
                 request.setAttribute("searchResult", "found");
 
-                SignesVitaux latestVitals = signesVitauxService.findLatestByPatientId(patient.getId());
-                request.setAttribute("latestVitals", latestVitals);
+                if (patients.size() == 1) {
+                    Patient patient = patients.get(0);
+                    SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
+                    SignesVitaux latestVitals = signesVitauxDAO.findLatestByPatientId(patient.getId());
+                    request.setAttribute("latestVitals", latestVitals);
+                }
             } else {
                 request.setAttribute("searchResult", "notFound");
-                request.setAttribute("numSecu", numSecu);
+                request.setAttribute("searchNom", nom);
+                request.setAttribute("searchPrenom", prenom);
             }
         }
 
@@ -104,22 +104,23 @@ public class PatientRegistrationServlet extends HttpServlet {
             String nom = request.getParameter("nom");
             String prenom = request.getParameter("prenom");
             String dateNaissanceStr = request.getParameter("dateNaissance");
-            String numSecu = request.getParameter("numSecu");
             String telephone = request.getParameter("telephone");
             String adresse = request.getParameter("adresse");
             String mutuelle = request.getParameter("mutuelle");
 
             LocalDate dateNaissance = LocalDate.parse(dateNaissanceStr);
 
-            Patient patient = new Patient(nom, prenom, dateNaissance, numSecu);
+            Patient patient = new Patient(nom, prenom, dateNaissance);
             patient.setTelephone(telephone);
             patient.setAdresse(adresse);
             patient.setMutuelle(mutuelle);
 
-            patientService.save(patient);
+            PatientDAO patientDAO = new PatientDAO();
+            patientDAO.save(patient);
 
             DossierMedical dossier = new DossierMedical(patient);
-            dossierMedicalService.save(dossier);
+            DossierMedicalDAO dossierDAO = new DossierMedicalDAO();
+            dossierDAO.save(dossier);
 
             request.setAttribute("patient", patient);
             request.setAttribute("success", "Patient enregistré avec succès");
@@ -144,8 +145,11 @@ public class PatientRegistrationServlet extends HttpServlet {
             Double poids = request.getParameter("poids").isEmpty() ? null : Double.parseDouble(request.getParameter("poids"));
             Double taille = request.getParameter("taille").isEmpty() ? null : Double.parseDouble(request.getParameter("taille"));
 
-            Patient patient = patientService.findById(patientId);
-            DossierMedical dossier = dossierMedicalService.findByPatientId(patientId);
+            PatientDAO patientDAO = new PatientDAO();
+            Patient patient = patientDAO.findById(patientId);
+
+            DossierMedicalDAO dossierDAO = new DossierMedicalDAO();
+            DossierMedical dossier = dossierDAO.findByPatientId(patientId);
 
             SignesVitaux signesVitaux = new SignesVitaux(dossier);
             signesVitaux.setTensionArterielle(tension);
@@ -155,10 +159,12 @@ public class PatientRegistrationServlet extends HttpServlet {
             signesVitaux.setPoids(poids);
             signesVitaux.setTaille(taille);
 
-            signesVitauxService.save(signesVitaux);
+            SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
+            signesVitauxDAO.save(signesVitaux);
 
             FileAttente fileAttente = new FileAttente(patient);
-            fileAttenteService.addPatientToQueue(fileAttente);
+            FileAttenteDAO fileAttenteDAO = new FileAttenteDAO();
+            fileAttenteDAO.save(fileAttente);
 
             request.setAttribute("success", "Signes vitaux enregistrés et patient ajouté à la file d'attente");
             response.sendRedirect(request.getContextPath() + "/infirmier/dashboard");

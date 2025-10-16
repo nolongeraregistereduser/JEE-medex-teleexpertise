@@ -20,7 +20,6 @@ CREATE TABLE patient (
                          nom VARCHAR(100) NOT NULL,
                          prenom VARCHAR(100) NOT NULL,
                          date_naissance DATE NOT NULL,
-                         num_secu VARCHAR(50) UNIQUE NOT NULL,
                          adresse VARCHAR(255),
                          telephone VARCHAR(50),
                          mutuelle VARCHAR(100),

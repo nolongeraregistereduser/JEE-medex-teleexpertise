@@ -43,9 +43,9 @@ public class FileAttenteService extends BaseService<FileAttente, Long> {
 
 
     public List<FileAttente> getCurrentQueue() {
-        return fileAttenteDAO.findCurrentQueue()
+        return fileAttenteDAO.getCurrentQueue()
                 .stream()
-                .sorted((f1, f2) -> f1.getHeureArrivee().compareTo(f2.getHeureArrivee()))
+                .sorted((f1, f2) -> f1.getDateArrivee().compareTo(f2.getDateArrivee()))
                 .collect(Collectors.toList());
     }
 
@@ -77,7 +77,7 @@ public class FileAttenteService extends BaseService<FileAttente, Long> {
     public List<FileAttente> getTodaysQueue() {
         return fileAttenteDAO.findTodaysQueue()
                 .stream()
-                .sorted((f1, f2) -> f1.getHeureArrivee().compareTo(f2.getHeureArrivee()))
+                .sorted((f1, f2) -> f1.getDateArrivee().compareTo(f2.getDateArrivee()))
                 .collect(Collectors.toList());
     }
 
@@ -101,7 +101,7 @@ public class FileAttenteService extends BaseService<FileAttente, Long> {
         }
 
         return completedToday.stream()
-                .mapToDouble(f -> java.time.Duration.between(f.getHeureArrivee(), LocalDateTime.now()).toMinutes())
+                .mapToDouble(f -> java.time.Duration.between(f.getDateArrivee(), LocalDateTime.now()).toMinutes())
                 .average()
                 .orElse(0.0);
     }

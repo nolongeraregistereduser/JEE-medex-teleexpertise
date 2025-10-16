@@ -29,11 +29,6 @@ public class Patient {
     @Column(name = "date_naissance", nullable = false)
     private LocalDate dateNaissance;
 
-    @NotBlank
-    @Size(max = 50)
-    @Column(name = "num_secu", nullable = false, unique = true, length = 50)
-    private String numSecu;
-
     @Size(max = 255)
     @Column(name = "adresse", length = 255)
     private String adresse;
@@ -58,11 +53,10 @@ public class Patient {
 
     public Patient() {}
 
-    public Patient(String nom, String prenom, LocalDate dateNaissance, String numSecu) {
+    public Patient(String nom, String prenom, LocalDate dateNaissance) {
         this.nom = nom;
         this.prenom = prenom;
         this.dateNaissance = dateNaissance;
-        this.numSecu = numSecu;
         this.dateCreation = LocalDateTime.now();
     }
 
@@ -81,12 +75,6 @@ public class Patient {
 
     public LocalDate getDateNaissance() { return dateNaissance; }
     public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
-
-    public String getNumSecu() { return numSecu; }
-    public void setNumSecu(String numSecu) { this.numSecu = numSecu; }
-
-    public String getNumeroSecuriteSociale() { return numSecu; }
-    public void setNumeroSecuriteSociale(String numeroSecuriteSociale) { this.numSecu = numeroSecuriteSociale; }
 
     public String getAdresse() { return adresse; }
     public void setAdresse(String adresse) { this.adresse = adresse; }

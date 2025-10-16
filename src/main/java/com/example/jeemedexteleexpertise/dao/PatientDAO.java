@@ -12,13 +12,6 @@ public class PatientDAO extends BaseDAO<Patient, Long> {
         super(Patient.class);
     }
 
-
-    public Patient findByNumeroSecuriteSociale(String numeroSecuriteSociale) {
-        String jpql = "SELECT p FROM Patient p WHERE p.numSecu = :numero";
-        return executeSingleResultQuery(jpql, "numero", numeroSecuriteSociale);
-    }
-
-
     public List<Patient> findByNomAndPrenom(String nom, String prenom) {
         String jpql = "SELECT p FROM Patient p WHERE p.nom = :nom AND p.prenom = :prenom";
         return getEntityManager().createQuery(jpql, Patient.class)
@@ -27,12 +20,10 @@ public class PatientDAO extends BaseDAO<Patient, Long> {
                 .getResultList();
     }
 
-
     public List<Patient> findPatientsRegisteredToday() {
         String jpql = "SELECT p FROM Patient p WHERE DATE(p.dateCreation) = CURRENT_DATE";
         return getEntityManager().createQuery(jpql, Patient.class).getResultList();
     }
-
 
     public List<Patient> searchByName(String searchTerm) {
         String jpql = "SELECT p FROM Patient p WHERE LOWER(p.nom) LIKE LOWER(:term) OR LOWER(p.prenom) LIKE LOWER(:term)";

@@ -1,8 +1,7 @@
 package com.example.jeemedexteleexpertise.servlet;
 
 import com.example.jeemedexteleexpertise.model.*;
-import com.example.jeemedexteleexpertise.service.*;
-import jakarta.inject.Inject;
+import com.example.jeemedexteleexpertise.dao.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,22 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 @WebServlet("/infirmier/dashboard")
 public class InfirmierDashboardServlet extends HttpServlet {
-
-    @Inject
-    private PatientService patientService;
-
-    @Inject
-    private SignesVitauxService signesVitauxService;
-
-    @Inject
-    private FileAttenteService fileAttenteService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -41,34 +29,24 @@ public class InfirmierDashboardServlet extends HttpServlet {
         }
 
         try {
-            List<SignesVitaux> todaysVitals = new ArrayList<>();
-            List<FileAttente> currentQueue = new ArrayList<>();
-            long waitingCount = 0;
+            SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
+            FileAttenteDAO fileAttenteDAO = new FileAttenteDAO();
 
-            if (signesVitauxService != null) {
-                todaysVitals = signesVitauxService.findTodaysSignesVitaux();
+            List<SignesVitaux> todaysVitals = signesVitauxDAO.findTodaysSignesVitaux();
+            List<FileAttente> currentQueue = fileAttenteDAO.getCurrentQueue();
+            long waitingCount = fileAttenteDAO.countPatientsWaiting();
+
+            List<PatientDashboardInfo> todaysPatients = new ArrayList<>();
+
+            for (SignesVitaux vitals : todaysVitals) {
+                Patient patient = vitals.getPatient();
+                if (patient != null) {
+                    PatientDashboardInfo info = new PatientDashboardInfo();
+                    info.setPatient(patient);
+                    info.setSignesVitaux(vitals);
+                    todaysPatients.add(info);
+                }
             }
-
-            if (fileAttenteService != null) {
-                currentQueue = fileAttenteService.getCurrentQueue();
-                waitingCount = fileAttenteService.countPatientsWaiting();
-            }
-
-            List<PatientDashboardInfo> todaysPatients = todaysVitals.stream()
-                    .map(vitals -> {
-                        Patient patient = vitals.getPatient();
-                        if (patient != null) {
-                            PatientDashboardInfo info = new PatientDashboardInfo();
-                            info.setPatient(patient);
-                            info.setSignesVitaux(vitals);
-                            return info;
-                        }
-                        return null;
-                    })
-                    .filter(info -> info != null)
-                    .sorted((p1, p2) -> p1.getSignesVitaux().getDateSaisie()
-                            .compareTo(p2.getSignesVitaux().getDateSaisie()))
-                    .collect(Collectors.toList());
 
             request.setAttribute("todaysPatients", todaysPatients);
             request.setAttribute("currentQueue", currentQueue);
@@ -96,4 +74,6 @@ public class InfirmierDashboardServlet extends HttpServlet {
         public SignesVitaux getSignesVitaux() { return signesVitaux; }
         public void setSignesVitaux(SignesVitaux signesVitaux) { this.signesVitaux = signesVitaux; }
     }
+
+
 }
