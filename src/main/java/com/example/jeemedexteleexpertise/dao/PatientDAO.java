@@ -14,7 +14,7 @@ public class PatientDAO extends BaseDAO<Patient, Long> {
 
 
     public Patient findByNumeroSecuriteSociale(String numeroSecuriteSociale) {
-        String jpql = "SELECT p FROM Patient p WHERE p.numeroSecuriteSociale = :numero";
+        String jpql = "SELECT p FROM Patient p WHERE p.numSecu = :numero";
         return executeSingleResultQuery(jpql, "numero", numeroSecuriteSociale);
     }
 

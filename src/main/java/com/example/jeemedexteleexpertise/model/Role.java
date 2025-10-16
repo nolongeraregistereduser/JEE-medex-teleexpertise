@@ -1,10 +1,10 @@
 package com.example.jeemedexteleexpertise.model;
 
 public enum Role {
-    ADMIN("Administrateur"),
-    GENERALISTE("Médecin Généraliste"),
-    SPECIALISTE("Médecin Spécialiste"),
-    INFERMIER("Infirmier(ère)");
+    INFIRMIER("Infirmier"),
+    GENERALISTE("Généraliste"),
+    SPECIALISTE("Spécialiste"),
+    ADMIN("Administrateur");
 
     private final String displayName;
 
@@ -13,6 +13,11 @@ public enum Role {
     }
 
     public String getDisplayName() {
+        return displayName;
+    }
+
+    @Override
+    public String toString() {
         return displayName;
     }
 }

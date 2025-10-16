@@ -67,7 +67,7 @@ public class AuthService {
                 return "generaliste/dashboard";
             case SPECIALISTE:
                 return "specialiste/dashboard";
-            case INFERMIER:
+            case INFIRMIER:
                 return "infirmier/dashboard";
             case ADMIN:
                 return "admin/dashboard";

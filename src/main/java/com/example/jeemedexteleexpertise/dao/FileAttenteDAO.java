@@ -16,19 +16,19 @@ public class FileAttenteDAO extends BaseDAO<FileAttente, Long> {
 
 
     public List<FileAttente> findByStatus(StatusFileAttente status) {
-        String jpql = "SELECT f FROM FileAttente f WHERE f.status = :status ORDER BY f.heureArrivee ASC";
+        String jpql = "SELECT f FROM FileAttente f WHERE f.status = :status ORDER BY f.dateArrivee ASC";
         return executeNamedQuery(jpql, "status", status);
     }
 
 
     public List<FileAttente> findCurrentQueue() {
-        String jpql = "SELECT f FROM FileAttente f WHERE f.status = :status ORDER BY f.heureArrivee ASC";
+        String jpql = "SELECT f FROM FileAttente f WHERE f.status = :status ORDER BY f.dateArrivee ASC";
         return executeNamedQuery(jpql, "status", StatusFileAttente.EN_ATTENTE);
     }
 
 
     public List<FileAttente> findTodaysQueue() {
-        String jpql = "SELECT f FROM FileAttente f WHERE DATE(f.heureArrivee) = CURRENT_DATE ORDER BY f.heureArrivee ASC";
+        String jpql = "SELECT f FROM FileAttente f WHERE DATE(f.dateArrivee) = CURRENT_DATE ORDER BY f.dateArrivee ASC";
         return getEntityManager().createQuery(jpql, FileAttente.class).getResultList();
     }
 

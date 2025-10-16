@@ -3,6 +3,7 @@ package com.example.jeemedexteleexpertise.service;
 import com.example.jeemedexteleexpertise.dao.BaseDAO;
 import com.example.jeemedexteleexpertise.dao.DossierMedicalDAO;
 import com.example.jeemedexteleexpertise.model.DossierMedical;
+import com.example.jeemedexteleexpertise.model.Patient;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
@@ -28,16 +29,12 @@ public class DossierMedicalService extends BaseService<DossierMedical, Long> {
         // Additional validation can be added here
     }
 
-    /**
-     * Business method: Find dossier by patient
-     */
+
     public DossierMedical findByPatientId(Long patientId) {
         return dossierMedicalDAO.findByPatientId(patientId);
     }
 
-    /**
-     * Business method: Find dossiers with allergies
-     */
+
     public List<DossierMedical> findByAllergies(String allergie) {
         if (allergie == null || allergie.trim().isEmpty()) {
             return List.of();
@@ -45,9 +42,7 @@ public class DossierMedicalService extends BaseService<DossierMedical, Long> {
         return dossierMedicalDAO.findByAllergies(allergie);
     }
 
-    /**
-     * Business method: Find dossiers with antecedents
-     */
+
     public List<DossierMedical> findByAntecedents(String antecedent) {
         if (antecedent == null || antecedent.trim().isEmpty()) {
             return List.of();
@@ -55,9 +50,7 @@ public class DossierMedicalService extends BaseService<DossierMedical, Long> {
         return dossierMedicalDAO.findByAntecedents(antecedent);
     }
 
-    /**
-     * Business method: Create or update patient's medical record
-     */
+
     public DossierMedical createOrUpdateDossier(DossierMedical dossier) {
         performAdditionalValidation(dossier);
 
@@ -77,9 +70,11 @@ public class DossierMedicalService extends BaseService<DossierMedical, Long> {
     }
 
     public DossierMedical createDossierForPatient(Long patientId) {
-        DossierMedical dossier = new DossierMedical();
-        dossier.setPatientId(patientId);
-        // Set default values or leave empty as per the business requirement
-        return dossierMedicalDAO.save(dossier);
+        Patient patient = new Patient();
+        patient.setId(patientId);
+
+        DossierMedical dossier = new DossierMedical(patient);
+        save(dossier);
+        return dossier;
     }
 }

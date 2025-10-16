@@ -15,20 +15,20 @@ public class SignesVitauxDAO extends BaseDAO<SignesVitaux, Long> {
 
 
     public List<SignesVitaux> findByPatientId(Long patientId) {
-        String jpql = "SELECT s FROM SignesVitaux s WHERE s.patient.id = :patientId ORDER BY s.dateMesure DESC";
+        String jpql = "SELECT s FROM SignesVitaux s WHERE s.dossierMedical.patient.id = :patientId ORDER BY s.dateSaisie DESC";
         return executeNamedQuery(jpql, "patientId", patientId);
     }
 
 
     public SignesVitaux findLatestByPatientId(Long patientId) {
-        String jpql = "SELECT s FROM SignesVitaux s WHERE s.patient.id = :patientId ORDER BY s.dateMesure DESC";
+        String jpql = "SELECT s FROM SignesVitaux s WHERE s.dossierMedical.patient.id = :patientId ORDER BY s.dateSaisie DESC";
         List<SignesVitaux> results = executeNamedQuery(jpql, "patientId", patientId);
         return results.isEmpty() ? null : results.get(0);
     }
 
 
     public List<SignesVitaux> findTodaysSignesVitaux() {
-        String jpql = "SELECT s FROM SignesVitaux s WHERE DATE(s.dateMesure) = CURRENT_DATE";
+        String jpql = "SELECT s FROM SignesVitaux s WHERE DATE(s.dateSaisie) = CURRENT_DATE ORDER BY s.dateSaisie DESC";
         return getEntityManager().createQuery(jpql, SignesVitaux.class).getResultList();
     }
 }

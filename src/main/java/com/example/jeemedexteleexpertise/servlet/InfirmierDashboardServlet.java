@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @WebServlet("/infirmier/dashboard")
 public class InfirmierDashboardServlet extends HttpServlet {
@@ -39,28 +40,48 @@ public class InfirmierDashboardServlet extends HttpServlet {
             return;
         }
 
-        List<SignesVitaux> todaysVitals = signesVitauxService.findTodaysSignesVitaux();
+        try {
+            List<SignesVitaux> todaysVitals = new ArrayList<>();
+            List<FileAttente> currentQueue = new ArrayList<>();
+            long waitingCount = 0;
 
-        List<PatientDashboardInfo> todaysPatients = todaysVitals.stream()
-                .filter(vitals -> vitals.getDateSaisie().toLocalDate().equals(LocalDate.now()))
-                .map(vitals -> {
-                    Patient patient = vitals.getPatient();
-                    PatientDashboardInfo info = new PatientDashboardInfo();
-                    info.setPatient(patient);
-                    info.setSignesVitaux(vitals);
-                    return info;
-                })
-                .sorted((p1, p2) -> p1.getSignesVitaux().getDateSaisie()
-                        .compareTo(p2.getSignesVitaux().getDateSaisie()))
-                .collect(Collectors.toList());
+            if (signesVitauxService != null) {
+                todaysVitals = signesVitauxService.findTodaysSignesVitaux();
+            }
 
-        List<FileAttente> currentQueue = fileAttenteService.getCurrentQueue();
-        long waitingCount = fileAttenteService.countPatientsWaiting();
+            if (fileAttenteService != null) {
+                currentQueue = fileAttenteService.getCurrentQueue();
+                waitingCount = fileAttenteService.countPatientsWaiting();
+            }
 
-        request.setAttribute("todaysPatients", todaysPatients);
-        request.setAttribute("currentQueue", currentQueue);
-        request.setAttribute("waitingCount", waitingCount);
-        request.setAttribute("totalToday", todaysPatients.size());
+            List<PatientDashboardInfo> todaysPatients = todaysVitals.stream()
+                    .map(vitals -> {
+                        Patient patient = vitals.getPatient();
+                        if (patient != null) {
+                            PatientDashboardInfo info = new PatientDashboardInfo();
+                            info.setPatient(patient);
+                            info.setSignesVitaux(vitals);
+                            return info;
+                        }
+                        return null;
+                    })
+                    .filter(info -> info != null)
+                    .sorted((p1, p2) -> p1.getSignesVitaux().getDateSaisie()
+                            .compareTo(p2.getSignesVitaux().getDateSaisie()))
+                    .collect(Collectors.toList());
+
+            request.setAttribute("todaysPatients", todaysPatients);
+            request.setAttribute("currentQueue", currentQueue);
+            request.setAttribute("waitingCount", waitingCount);
+            request.setAttribute("totalToday", todaysPatients.size());
+
+        } catch (Exception e) {
+            request.setAttribute("error", "Erreur lors du chargement des données: " + e.getMessage());
+            request.setAttribute("todaysPatients", new ArrayList<>());
+            request.setAttribute("currentQueue", new ArrayList<>());
+            request.setAttribute("waitingCount", 0L);
+            request.setAttribute("totalToday", 0);
+        }
 
         request.getRequestDispatcher("/jsp/infirmier/dashboard.jsp").forward(request, response);
     }

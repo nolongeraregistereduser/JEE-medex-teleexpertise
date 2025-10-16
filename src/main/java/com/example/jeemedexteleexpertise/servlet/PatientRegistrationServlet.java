@@ -116,12 +116,12 @@ public class PatientRegistrationServlet extends HttpServlet {
             patient.setAdresse(adresse);
             patient.setMutuelle(mutuelle);
 
-            Patient savedPatient = patientService.save(patient);
+            patientService.save(patient);
 
-            DossierMedical dossier = new DossierMedical(savedPatient);
+            DossierMedical dossier = new DossierMedical(patient);
             dossierMedicalService.save(dossier);
 
-            request.setAttribute("patient", savedPatient);
+            request.setAttribute("patient", patient);
             request.setAttribute("success", "Patient enregistré avec succès");
             request.setAttribute("showVitalsForm", true);
 
