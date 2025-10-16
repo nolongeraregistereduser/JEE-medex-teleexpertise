@@ -1,277 +1,222 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Infirmier - Télé-Expertise Médicale</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            line-height: 1.6;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .header h1 {
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-            color: white;
-            text-decoration: none;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .welcome-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-icon {
-            font-size: 40px;
-            margin-bottom: 1rem;
-        }
-
-        .card h3 {
-            color: #333;
-            margin-bottom: 1rem;
-            font-size: 20px;
-        }
-
-        .card p {
-            color: #666;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-btn {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-
-        .card-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
-            color: white;
-            text-decoration: none;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #e74c3c;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .urgent-queue {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .urgent-queue h3 {
-            margin-bottom: 0.5rem;
-        }
-    </style>
+    <title>Tableau de Bord Infirmier - Medex</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <header class="header">
-        <h1>
-            <span>👩‍⚕️</span>
-            Dashboard Infirmier
-        </h1>
-        <div class="user-info">
-            <span>Bienvenue, ${sessionScope.userName}</span>
-            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Déconnexion</a>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="welcome-card">
-            <h2>Bienvenue dans votre espace Infirmier</h2>
-            <p>Gérez l'accueil des patients, enregistrez les signes vitaux et organisez la file d'attente.</p>
-        </div>
-
-        <div class="urgent-queue">
-            <h3>🚨 File d'attente prioritaire</h3>
-            <p>7 patients en attente de consultation</p>
-        </div>
-
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number">23</div>
-                <div class="stat-label">Patients enregistrés aujourd'hui</div>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-hospital-user me-2"></i>Medex - Infirmier
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="${pageContext.request.contextPath}/infirmier/patient-registration">
+                    <i class="fas fa-user-plus me-1"></i>Nouveau Patient
+                </a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/logout">
+                    <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+                </a>
             </div>
-            <div class="stat-card">
-                <div class="stat-number">7</div>
-                <div class="stat-label">En file d'attente</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">16</div>
-                <div class="stat-label">Consultations terminées</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">12min</div>
-                <div class="stat-label">Temps d'attente moyen</div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2><i class="fas fa-tachometer-alt me-2"></i>Tableau de Bord - Infirmier</h2>
+                <p class="text-muted">Aperçu des patients d'aujourd'hui</p>
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="card">
-                <div class="card-icon">👤</div>
-                <h3>Accueil Patient</h3>
-                <p>Enregistrer un nouveau patient ou rechercher un patient existant</p>
-                <a href="#" class="card-btn">Commencer</a>
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>${totalToday}</h4>
+                                <p class="mb-0">Patients Aujourd'hui</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>${waitingCount}</h4>
+                                <p class="mb-0">En Attente</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>Actions Rapides</h5>
+                            </div>
+                            <div>
+                                <a href="${pageContext.request.contextPath}/infirmier/patient-registration"
+                                   class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nouveau Patient
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Patients Enregistrés Aujourd'hui</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <c:choose>
+                            <c:when test="${empty todaysPatients}">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">Aucun patient enregistré aujourd'hui</p>
+                                    <a href="${pageContext.request.contextPath}/infirmier/patient-registration"
+                                       class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Enregistrer un Patient
+                                    </a>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Patient</th>
+                                                <th>Num Sécu</th>
+                                                <th>Heure Arrivée</th>
+                                                <th>Signes Vitaux</th>
+                                                <th>Téléphone</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="patientInfo" items="${todaysPatients}">
+                                                <tr>
+                                                    <td>
+                                                        <strong>${patientInfo.patient.nomComplet}</strong><br>
+                                                        <small class="text-muted">
+                                                            <fmt:formatDate value="${patientInfo.patient.dateNaissance}" pattern="dd/MM/yyyy"/>
+                                                        </small>
+                                                    </td>
+                                                    <td><code>${patientInfo.patient.numSecu}</code></td>
+                                                    <td>
+                                                        <fmt:formatDate value="${patientInfo.signesVitaux.dateSaisie}"
+                                                                      pattern="HH:mm"/>
+                                                    </td>
+                                                    <td>
+                                                        <small>
+                                                            <i class="fas fa-heartbeat text-danger"></i> ${patientInfo.signesVitaux.tensionArterielle}<br>
+                                                            <i class="fas fa-heart text-primary"></i> ${patientInfo.signesVitaux.frequenceCardiaque} bpm<br>
+                                                            <i class="fas fa-thermometer-half text-warning"></i> ${patientInfo.signesVitaux.temperature}°C
+                                                        </small>
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${not empty patientInfo.patient.telephone}">
+                                                                ${patientInfo.patient.telephone}
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="text-muted">-</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
             </div>
 
-            <div class="card">
-                <div class="card-icon">❤️</div>
-                <h3>Signes Vitaux</h3>
-                <p>Mesurer et enregistrer les signes vitaux des patients</p>
-                <a href="#" class="card-btn">Enregistrer</a>
-            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-clock me-2"></i>File d'Attente Actuelle</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <c:choose>
+                            <c:when test="${empty currentQueue}">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                    <p class="text-muted mb-0">Aucun patient en attente</p>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="list-group list-group-flush">
+                                    <c:forEach var="fileAttente" items="${currentQueue}" varStatus="status">
+                                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold">${fileAttente.patient.nomComplet}</div>
+                                                <small class="text-muted">
+                                                    Arrivé à <fmt:formatDate value="${fileAttente.heureArrivee}" pattern="HH:mm"/>
+                                                </small>
+                                            </div>
+                                            <span class="badge ${status.index == 0 ? 'bg-warning' : 'bg-secondary'} rounded-pill">
+                                                ${status.index + 1}
+                                            </span>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
 
-            <div class="card">
-                <div class="card-icon">📋</div>
-                <h3>Liste des Patients</h3>
-                <p>Voir la liste des patients enregistrés aujourd'hui</p>
-                <a href="#" class="card-btn">Voir la liste</a>
-            </div>
-
-            <div class="card">
-                <div class="card-icon">⏰</div>
-                <h3>File d'Attente</h3>
-                <p>Gérer la file d'attente des patients</p>
-                <a href="#" class="card-btn">Gérer</a>
-            </div>
-
-            <div class="card">
-                <div class="card-icon">📊</div>
-                <h3>Statistiques du Jour</h3>
-                <p>Voir les statistiques d'accueil du jour</p>
-                <a href="#" class="card-btn">Analyser</a>
-            </div>
-
-            <div class="card">
-                <div class="card-icon">⚙️</div>
-                <h3>Mon Profil</h3>
-                <p>Modifier mes informations personnelles</p>
-                <a href="#" class="card-btn">Modifier</a>
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Instructions</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="fas fa-search text-info me-2"></i>
+                                Recherchez d'abord si le patient existe
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-user-plus text-primary me-2"></i>
+                                Enregistrez les nouveaux patients
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-heart text-danger me-2"></i>
+                                Prenez les signes vitaux obligatoires
+                            </li>
+                            <li>
+                                <i class="fas fa-clipboard-list text-success me-2"></i>
+                                Le patient sera automatiquement ajouté à la file
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                if (!e.target.classList.contains('card-btn')) {
-                    const btn = this.querySelector('.card-btn');
-                    if (btn) btn.click();
-                }
-            });
-        });
-
-        // Auto-refresh queue status every 30 seconds
-        setInterval(() => {
-            // This would be replaced with actual AJAX call
-            console.log('Refreshing queue status...');
-        }, 30000);
-    </script>
-</body>
-</html>

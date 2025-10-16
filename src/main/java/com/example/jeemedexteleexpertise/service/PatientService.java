@@ -29,7 +29,10 @@ public class PatientService extends BaseService<Patient, Long> {
             throw new IllegalArgumentException("Patient first name is required");
         }
         if (patient.getNumeroSecuriteSociale() == null || patient.getNumeroSecuriteSociale().trim().isEmpty()) {
-            throw new IllegalArgumentException("Social security number is required");
+            throw new IllegalArgumentException("Security number is required");
+        }
+        if (patient.getDateNaissance() == null) {
+            throw new IllegalArgumentException("Birth date is required");
         }
 
         // Check if security number already exists (for new patients)
@@ -41,24 +44,17 @@ public class PatientService extends BaseService<Patient, Long> {
         }
     }
 
-
     public Patient findByNumeroSecuriteSociale(String numeroSecuriteSociale) {
-        if (numeroSecuriteSociale == null || numeroSecuriteSociale.trim().isEmpty()) {
-            return null;
-        }
         return patientDAO.findByNumeroSecuriteSociale(numeroSecuriteSociale);
     }
-
 
     public List<Patient> findByNomAndPrenom(String nom, String prenom) {
         return patientDAO.findByNomAndPrenom(nom, prenom);
     }
 
-
     public List<Patient> findPatientsRegisteredToday() {
         return patientDAO.findPatientsRegisteredToday();
     }
-
 
     public List<Patient> searchByName(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
@@ -66,7 +62,6 @@ public class PatientService extends BaseService<Patient, Long> {
         }
         return patientDAO.searchByName(searchTerm);
     }
-
 
     public Patient registerNewPatient(Patient patient) {
         performAdditionalValidation(patient);

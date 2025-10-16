@@ -75,4 +75,11 @@ public class DossierMedicalService extends BaseService<DossierMedical, Long> {
             return dossier;
         }
     }
+
+    public DossierMedical createDossierForPatient(Long patientId) {
+        DossierMedical dossier = new DossierMedical();
+        dossier.setPatientId(patientId);
+        // Set default values or leave empty as per the business requirement
+        return dossierMedicalDAO.save(dossier);
+    }
 }
