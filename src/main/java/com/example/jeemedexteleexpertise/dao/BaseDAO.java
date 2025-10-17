@@ -1,7 +1,7 @@
 package com.example.jeemedexteleexpertise.dao;
 
+import com.example.jeemedexteleexpertise.util.JpaUtil;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
@@ -11,25 +11,45 @@ import java.util.Optional;
 
 public abstract class BaseDAO<T, ID> {
 
-    @PersistenceContext
     protected EntityManager entityManager;
 
     private final Class<T> entityClass;
 
     public BaseDAO(Class<T> entityClass) {
         this.entityClass = entityClass;
+        // Ensure we have an EntityManager even when not running in a Jakarta container
+        if (this.entityManager == null) {
+            this.entityManager = JpaUtil.createEntityManager();
+        }
     }
 
 
     @Transactional
     public void save(T entity) {
-        entityManager.persist(entity);
+        boolean createdTx = false;
+        try {
+            if (!entityManager.getTransaction().isActive()) { entityManager.getTransaction().begin(); createdTx = true; }
+            entityManager.persist(entity);
+            if (createdTx) { entityManager.getTransaction().commit(); }
+        } catch (RuntimeException ex) {
+            if (createdTx && entityManager.getTransaction().isActive()) { entityManager.getTransaction().rollback(); }
+            throw ex;
+        }
     }
 
 
     @Transactional
     public T update(T entity) {
-        return entityManager.merge(entity);
+        boolean createdTx = false;
+        try {
+            if (!entityManager.getTransaction().isActive()) { entityManager.getTransaction().begin(); createdTx = true; }
+            T merged = entityManager.merge(entity);
+            if (createdTx) { entityManager.getTransaction().commit(); }
+            return merged;
+        } catch (RuntimeException ex) {
+            if (createdTx && entityManager.getTransaction().isActive()) { entityManager.getTransaction().rollback(); }
+            throw ex;
+        }
     }
 
 
@@ -37,7 +57,15 @@ public abstract class BaseDAO<T, ID> {
     public void deleteById(ID id) {
         T entity = findById(id);
         if (entity != null) {
-            entityManager.remove(entity);
+            boolean createdTx = false;
+            try {
+                if (!entityManager.getTransaction().isActive()) { entityManager.getTransaction().begin(); createdTx = true; }
+                entityManager.remove(entity);
+                if (createdTx) { entityManager.getTransaction().commit(); }
+            } catch (RuntimeException ex) {
+                if (createdTx && entityManager.getTransaction().isActive()) { entityManager.getTransaction().rollback(); }
+                throw ex;
+            }
         }
     }
 
@@ -45,7 +73,15 @@ public abstract class BaseDAO<T, ID> {
     @Transactional
     public void deleteEntity(T entity) {
         if (entity != null) {
-            entityManager.remove(entity);
+            boolean createdTx = false;
+            try {
+                if (!entityManager.getTransaction().isActive()) { entityManager.getTransaction().begin(); createdTx = true; }
+                entityManager.remove(entity);
+                if (createdTx) { entityManager.getTransaction().commit(); }
+            } catch (RuntimeException ex) {
+                if (createdTx && entityManager.getTransaction().isActive()) { entityManager.getTransaction().rollback(); }
+                throw ex;
+            }
         }
     }
 
@@ -114,6 +150,9 @@ public abstract class BaseDAO<T, ID> {
 
 
     protected EntityManager getEntityManager() {
-        return entityManager;
+        if (this.entityManager == null) {
+            this.entityManager = JpaUtil.createEntityManager();
+        }
+        return this.entityManager;
     }
 }

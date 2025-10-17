@@ -29,4 +29,13 @@ public class PatientDAO extends BaseDAO<Patient, Long> {
         String jpql = "SELECT p FROM Patient p WHERE LOWER(p.nom) LIKE LOWER(:term) OR LOWER(p.prenom) LIKE LOWER(:term)";
         return executeNamedQuery(jpql, "term", "%" + searchTerm + "%");
     }
+
+    public Patient findBySSN(String ssn) {
+        String jpql = "SELECT p FROM Patient p WHERE p.numeroSecuriteSociale = :ssn";
+        List<Patient> results = getEntityManager().createQuery(jpql, Patient.class)
+                .setParameter("ssn", ssn)
+                .setMaxResults(1)
+                .getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
 }

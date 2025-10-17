@@ -57,41 +57,36 @@ public class PatientRegistrationServlet extends HttpServlet {
             handlePatientRegistration(request, response);
         } else if ("addVitals".equals(action)) {
             handleAddVitalSigns(request, response);
+        } else if ("addDossier".equals(action)) {
+            handleAddDossier(request, response);
         }
     }
 
     private void handlePatientSearch(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String nom = request.getParameter("nom");
-        String prenom = request.getParameter("prenom");
+        String ssn = request.getParameter("ssn");
 
-        if ((nom != null && !nom.trim().isEmpty()) || (prenom != null && !prenom.trim().isEmpty())) {
-            PatientDAO patientDAO = new PatientDAO();
-            List<Patient> patients;
-
-            if (nom != null && !nom.trim().isEmpty() && prenom != null && !prenom.trim().isEmpty()) {
-                patients = patientDAO.findByNomAndPrenom(nom.trim(), prenom.trim());
-            } else {
-                String searchTerm = nom != null && !nom.trim().isEmpty() ? nom.trim() : prenom.trim();
-                patients = patientDAO.searchByName(searchTerm);
-            }
-
-            if (!patients.isEmpty()) {
-                request.setAttribute("patients", patients);
+        PatientDAO patientDAO = new PatientDAO();
+        if (ssn != null && !ssn.trim().isEmpty()) {
+            // search by unique SSN
+            Patient patient = patientDAO.findBySSN(ssn.trim());
+            if (patient != null) {
                 request.setAttribute("searchResult", "found");
-
-                if (patients.size() == 1) {
-                    Patient patient = patients.get(0);
-                    SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
-                    SignesVitaux latestVitals = signesVitauxDAO.findLatestByPatientId(patient.getId());
-                    request.setAttribute("latestVitals", latestVitals);
-                }
+                SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
+                SignesVitaux latestVitals = signesVitauxDAO.findLatestByPatientId(patient.getId());
+                request.setAttribute("latestVitals", latestVitals);
+                request.setAttribute("patient", patient);
+                // fetch dossier if exists
+                DossierMedicalDAO dossierDAO = new DossierMedicalDAO();
+                DossierMedical dossier = dossierDAO.findByPatientId(patient.getId());
+                request.setAttribute("dossier", dossier);
             } else {
                 request.setAttribute("searchResult", "notFound");
-                request.setAttribute("searchNom", nom);
-                request.setAttribute("searchPrenom", prenom);
+                request.setAttribute("searchSSN", ssn);
             }
+            request.getRequestDispatcher("/jsp/infirmier/patient-registration.jsp").forward(request, response);
+            return;
         }
 
         request.getRequestDispatcher("/jsp/infirmier/patient-registration.jsp").forward(request, response);
@@ -107,6 +102,31 @@ public class PatientRegistrationServlet extends HttpServlet {
             String telephone = request.getParameter("telephone");
             String adresse = request.getParameter("adresse");
             String mutuelle = request.getParameter("mutuelle");
+            String numeroSecuriteSociale = request.getParameter("numeroSecuriteSociale");
+
+            // validate SSN presence (DB requires non-null)
+            if (numeroSecuriteSociale == null || numeroSecuriteSociale.trim().isEmpty()) {
+                request.setAttribute("error", "Numéro de sécurité sociale requis.");
+                request.getRequestDispatcher("/jsp/infirmier/patient-registration.jsp").forward(request, response);
+                return;
+            }
+
+            PatientDAO patientDAO = new PatientDAO();
+            Patient existing = patientDAO.findBySSN(numeroSecuriteSociale.trim());
+            if (existing != null) {
+                // If patient already exists with SSN, redirect to search result showing existing patient
+                request.setAttribute("patient", existing);
+                request.setAttribute("searchResult", "found");
+                SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
+                SignesVitaux latestVitals = signesVitauxDAO.findLatestByPatientId(existing.getId());
+                request.setAttribute("latestVitals", latestVitals);
+                DossierMedicalDAO dossierDAO = new DossierMedicalDAO();
+                DossierMedical dossier = dossierDAO.findByPatientId(existing.getId());
+                request.setAttribute("dossier", dossier);
+                request.setAttribute("error", "Un patient avec ce numéro de sécurité sociale existe déjà.");
+                request.getRequestDispatcher("/jsp/infirmier/patient-registration.jsp").forward(request, response);
+                return;
+            }
 
             LocalDate dateNaissance = LocalDate.parse(dateNaissanceStr);
 
@@ -114,17 +134,68 @@ public class PatientRegistrationServlet extends HttpServlet {
             patient.setTelephone(telephone);
             patient.setAdresse(adresse);
             patient.setMutuelle(mutuelle);
+            patient.setNumeroSecuriteSociale(numeroSecuriteSociale.trim());
 
-            PatientDAO patientDAO = new PatientDAO();
             patientDAO.save(patient);
 
             DossierMedical dossier = new DossierMedical(patient);
             DossierMedicalDAO dossierDAO = new DossierMedicalDAO();
             dossierDAO.save(dossier);
 
+            // Check if vitals were submitted as part of the registration form
+            String tension = request.getParameter("tension");
+            String frequenceCardiaqueStr = request.getParameter("frequenceCardiaque");
+            String temperatureStr = request.getParameter("temperature");
+            String frequenceRespiratoireStr = request.getParameter("frequenceRespiratoire");
+            String poidsStr = request.getParameter("poids");
+            String tailleStr = request.getParameter("taille");
+
+            boolean vitalsProvided = (tension != null && !tension.isBlank()) ||
+                    (frequenceCardiaqueStr != null && !frequenceCardiaqueStr.isBlank()) ||
+                    (temperatureStr != null && !temperatureStr.isBlank()) ||
+                    (frequenceRespiratoireStr != null && !frequenceRespiratoireStr.isBlank()) ||
+                    (poidsStr != null && !poidsStr.isBlank()) ||
+                    (tailleStr != null && !tailleStr.isBlank());
+
+            if (vitalsProvided) {
+                // parse numeric vitals defensively
+                Integer frequenceCardiaque = null;
+                Double temperature = null;
+                Integer frequenceRespiratoire = null;
+                Double poids = null;
+                Double taille = null;
+
+                try { if (frequenceCardiaqueStr != null && !frequenceCardiaqueStr.isBlank()) frequenceCardiaque = Integer.parseInt(frequenceCardiaqueStr); } catch (NumberFormatException ignored) {}
+                try { if (temperatureStr != null && !temperatureStr.isBlank()) temperature = Double.parseDouble(temperatureStr); } catch (NumberFormatException ignored) {}
+                try { if (frequenceRespiratoireStr != null && !frequenceRespiratoireStr.isBlank()) frequenceRespiratoire = Integer.parseInt(frequenceRespiratoireStr); } catch (NumberFormatException ignored) {}
+                try { if (poidsStr != null && !poidsStr.isBlank()) poids = Double.parseDouble(poidsStr); } catch (NumberFormatException ignored) {}
+                try { if (tailleStr != null && !tailleStr.isBlank()) taille = Double.parseDouble(tailleStr); } catch (NumberFormatException ignored) {}
+
+                SignesVitaux signesVitaux = new SignesVitaux(dossier);
+                signesVitaux.setTensionArterielle(tension);
+                signesVitaux.setFrequenceCardiaque(frequenceCardiaque);
+                signesVitaux.setTemperature(temperature);
+                signesVitaux.setFrequenceRespiratoire(frequenceRespiratoire);
+                signesVitaux.setPoids(poids);
+                signesVitaux.setTaille(taille);
+
+                SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
+                signesVitauxDAO.save(signesVitaux);
+
+                // Automatically add to queue when vitals provided during registration
+                FileAttente fileAttente = new FileAttente(patient);
+                FileAttenteDAO fileAttenteDAO = new FileAttenteDAO();
+                fileAttenteDAO.save(fileAttente);
+
+                // Redirect to dashboard after successful registration + queue
+                response.sendRedirect(request.getContextPath() + "/infirmier/dashboard");
+                return;
+            }
+
+            // If no vitals provided, show success and keep patient/dossier for vitals entry
             request.setAttribute("patient", patient);
-            request.setAttribute("success", "Patient enregistré avec succès");
-            request.setAttribute("showVitalsForm", true);
+            request.setAttribute("dossier", dossier);
+            request.setAttribute("success", "Patient enregistré avec succès. Veuillez saisir les signes vitaux.");
 
         } catch (Exception e) {
             request.setAttribute("error", "Erreur lors de l'enregistrement: " + e.getMessage());
@@ -168,11 +239,52 @@ public class PatientRegistrationServlet extends HttpServlet {
 
             request.setAttribute("success", "Signes vitaux enregistrés et patient ajouté à la file d'attente");
             response.sendRedirect(request.getContextPath() + "/infirmier/dashboard");
-            return;
 
         } catch (Exception e) {
             request.setAttribute("error", "Erreur lors de l'enregistrement des signes vitaux: " + e.getMessage());
             request.getRequestDispatcher("/jsp/infirmier/patient-registration.jsp").forward(request, response);
         }
+    }
+
+    private void handleAddDossier(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Long patientId = Long.parseLong(request.getParameter("patientId"));
+            String antecedents = request.getParameter("antecedents");
+            String allergies = request.getParameter("allergies");
+            String traitement = request.getParameter("traitementEnCours");
+
+            DossierMedicalDAO dossierDAO = new DossierMedicalDAO();
+            DossierMedical dossier = dossierDAO.findByPatientId(patientId);
+            if (dossier == null) {
+                PatientDAO patientDAO = new PatientDAO();
+                Patient patient = patientDAO.findById(patientId);
+                dossier = new DossierMedical(patient);
+                dossier.setAntecedents(antecedents);
+                dossier.setAllergies(allergies);
+                dossier.setTraitementEnCours(traitement);
+                dossierDAO.save(dossier);
+            } else {
+                dossier.setAntecedents(antecedents);
+                dossier.setAllergies(allergies);
+                dossier.setTraitementEnCours(traitement);
+                dossierDAO.update(dossier);
+            }
+
+            request.setAttribute("success", "Dossier médical mis à jour avec succès");
+            // reload patient view
+            PatientDAO patientDAO = new PatientDAO();
+            Patient patient = patientDAO.findById(patientId);
+            request.setAttribute("patient", patient);
+            request.setAttribute("dossier", dossier);
+            SignesVitauxDAO signesVitauxDAO = new SignesVitauxDAO();
+            SignesVitaux latestVitals = signesVitauxDAO.findLatestByPatientId(patientId);
+            request.setAttribute("latestVitals", latestVitals);
+
+        } catch (Exception e) {
+            request.setAttribute("error", "Erreur lors de la mise à jour du dossier: " + e.getMessage());
+        }
+
+        request.getRequestDispatcher("/jsp/infirmier/patient-registration.jsp").forward(request, response);
     }
 }

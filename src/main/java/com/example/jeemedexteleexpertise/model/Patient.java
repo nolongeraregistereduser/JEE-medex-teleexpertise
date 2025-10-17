@@ -41,6 +41,10 @@ public class Patient {
     @Column(name = "mutuelle", length = 100)
     private String mutuelle;
 
+    @NotBlank
+    @Column(name = "num_secu", nullable = false, length = 50)
+    private String numeroSecuriteSociale;
+
     @Column(name = "date_creation")
     private LocalDateTime dateCreation;
 
@@ -84,6 +88,9 @@ public class Patient {
 
     public String getMutuelle() { return mutuelle; }
     public void setMutuelle(String mutuelle) { this.mutuelle = mutuelle; }
+
+    public String getNumeroSecuriteSociale() { return numeroSecuriteSociale; }
+    public void setNumeroSecuriteSociale(String numeroSecuriteSociale) { this.numeroSecuriteSociale = numeroSecuriteSociale; }
 
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
