@@ -21,7 +21,7 @@ public class PatientDAO extends BaseDAO<Patient, Long> {
         try {
             em = HibernateUtil.getEntityManager();
             TypedQuery<Patient> query = em.createQuery(
-                "SELECT p FROM Patient p WHERE p.numSecu = :numSecu", Patient.class);
+                "SELECT p FROM Patient p WHERE p.numeroSecuriteSociale = :numSecu", Patient.class);
             query.setParameter("numSecu", numSecu);
             return Optional.ofNullable(query.getSingleResult());
         } catch (NoResultException e) {
@@ -92,4 +92,3 @@ public class PatientDAO extends BaseDAO<Patient, Long> {
         }
     }
 }
-

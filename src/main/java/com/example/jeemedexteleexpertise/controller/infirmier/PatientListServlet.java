@@ -2,7 +2,6 @@ package com.example.jeemedexteleexpertise.controller.infirmier;
 
 import com.example.jeemedexteleexpertise.model.FileAttente;
 import com.example.jeemedexteleexpertise.service.FileAttenteService;
-import com.example.jeemedexteleexpertise.service.PatientService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,34 +11,32 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "InfirmierDashboardServlet", urlPatterns = {"/infirmier/dashboard"})
-public class InfirmierDashboardServlet extends HttpServlet {
+@WebServlet(name = "PatientListServlet", urlPatterns = {"/infirmier/patients"})
+public class PatientListServlet extends HttpServlet {
 
     private FileAttenteService fileAttenteService;
-    private PatientService patientService;
 
     @Override
     public void init() throws ServletException {
         this.fileAttenteService = new FileAttenteService();
-        this.patientService = new PatientService();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get today's queue
+        // Get today's queue sorted by arrival time
         List<FileAttente> todayQueue = fileAttenteService.findTodayQueueSortedByArrival();
 
-        // Get statistics
+        // Get count of waiting patients
         long waitingCount = fileAttenteService.countWaiting();
-        int todayPatientsCount = patientService.findTodayPatients().size();
 
         request.setAttribute("queue", todayQueue);
         request.setAttribute("waitingCount", waitingCount);
-        request.setAttribute("todayPatientsCount", todayPatientsCount);
-        request.setAttribute("totalInQueue", todayQueue.size());
+        request.setAttribute("totalToday", todayQueue.size());
 
-        request.getRequestDispatcher("/jsp/infirmier/dashboard.jsp").forward(request, response);
+        // Forward to the patient list JSP
+        request.getRequestDispatcher("/jsp/infirmier/patient-list.jsp").forward(request, response);
     }
 }
+
