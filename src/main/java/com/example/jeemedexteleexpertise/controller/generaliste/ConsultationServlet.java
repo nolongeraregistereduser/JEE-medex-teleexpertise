@@ -101,7 +101,7 @@ public class ConsultationServlet extends HttpServlet {
             consultation.setMotif(motif.trim());
             consultation.setObservations(observations != null ? observations.trim() : null);
             consultation.setCout(150.0); // Fixed cost
-            consultation.setStatus(StatusConsultation.EN_ATTENTE);
+            consultation.setStatus(StatusConsultation.TERMINEE);
 
             // Save consultation
             consultation = consultationService.save(consultation);
@@ -124,6 +124,8 @@ public class ConsultationServlet extends HttpServlet {
             throws ServletException, IOException {
         // Load all patients for dropdown
         List<Patient> patients = patientService.findAll();
+
+
         request.setAttribute("patients", patients);
 
         // Forward to form
