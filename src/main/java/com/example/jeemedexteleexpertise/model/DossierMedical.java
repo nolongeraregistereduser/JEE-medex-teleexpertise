@@ -42,7 +42,7 @@ public class DossierMedical {
         this.traitementEnCours = traitementEnCours;
     }
 
-
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -57,6 +57,12 @@ public class DossierMedical {
 
     public String getTraitementEnCours() { return traitementEnCours; }
     public void setTraitementEnCours(String traitementEnCours) { this.traitementEnCours = traitementEnCours; }
+
+    // Add getTraitementsEnCours method (alias for getTraitementEnCours)
+    public String getTraitementsEnCours() { return traitementEnCours; }
+
+    // Add setTraitementsEnCours method (alias for setTraitementEnCours)
+    public void setTraitementsEnCours(String traitementsEnCours) { this.traitementEnCours = traitementsEnCours; }
 
     public List<SignesVitaux> getSignesVitaux() { return signesVitaux; }
     public void setSignesVitaux(List<SignesVitaux> signesVitaux) { this.signesVitaux = signesVitaux; }

@@ -52,12 +52,24 @@ public class ActeTechnique {
         this.date = LocalDateTime.now();
     }
 
+    // Business methods
+    public double getCoutActe() {
+        return typeActe != null ? typeActe.getCout() : 0.0;
+    }
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public TypeActe getTypeActe() { return typeActe; }
     public void setTypeActe(TypeActe typeActe) { this.typeActe = typeActe; }
+
+    // Add getType method (alias for getTypeActe)
+    public TypeActe getType() { return typeActe; }
+    public void setType(TypeActe type) { this.typeActe = type; }
+
+    // Add getCout method (delegating to TypeActe)
+    public double getCout() { return getCoutActe(); }
 
     public LocalDateTime getDate() { return date; }
     public void setDate(LocalDateTime date) { this.date = date; }

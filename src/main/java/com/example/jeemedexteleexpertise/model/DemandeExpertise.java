@@ -107,11 +107,17 @@ public class DemandeExpertise {
     public LocalDateTime getDateDemande() { return dateDemande; }
     public void setDateDemande(LocalDateTime dateDemande) { this.dateDemande = dateDemande; }
 
+    // Add getDateCreation method (alias for getDateDemande)
+    public LocalDateTime getDateCreation() { return dateDemande; }
+
     public LocalDateTime getDateReponse() { return dateReponse; }
     public void setDateReponse(LocalDateTime dateReponse) { this.dateReponse = dateReponse; }
 
     public String getAvisMedecin() { return avisMedecin; }
     public void setAvisMedecin(String avisMedecin) { this.avisMedecin = avisMedecin; }
+
+    // Add setAvisMedical method (alias for setAvisMedecin)
+    public void setAvisMedical(String avisMedical) { this.avisMedecin = avisMedical; }
 
     public String getRecommandations() { return recommandations; }
     public void setRecommandations(String recommandations) { this.recommandations = recommandations; }

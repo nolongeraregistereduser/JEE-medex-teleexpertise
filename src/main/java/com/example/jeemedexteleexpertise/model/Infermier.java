@@ -18,8 +18,9 @@ public class Infermier extends Utilisateur {
         super(nom, prenom, email, motDePasse);
     }
 
+    @Override
     public Role getRole() {
-        return Role.INFERMIER;
+        return Role.INFIRMIER;
     }
 
 

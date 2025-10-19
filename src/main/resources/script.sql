@@ -20,9 +20,9 @@ CREATE TABLE patient (
                          nom VARCHAR(100) NOT NULL,
                          prenom VARCHAR(100) NOT NULL,
                          date_naissance DATE NOT NULL,
-                         num_secu VARCHAR(50) UNIQUE NOT NULL,
                          adresse VARCHAR(255),
                          telephone VARCHAR(50),
+                         num_secu VARCHAR(50) NOT NULL UNIQUE,
                          mutuelle VARCHAR(100),
                          date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

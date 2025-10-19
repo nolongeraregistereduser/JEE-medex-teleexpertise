@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "patient")
@@ -16,49 +15,38 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Le nom ne peut pas être vide")
-    @Size(max = 100, message = "Le nom ne peut pas dépasser 100 caractères")
+    @NotBlank
+    @Size(max = 100)
     @Column(name = "nom", nullable = false, length = 100)
     private String nom;
 
-    @NotBlank(message = "Le prénom ne peut pas être vide")
-    @Size(max = 100, message = "Le prénom ne peut pas dépasser 100 caractères")
+    @NotBlank
+    @Size(max = 100)
     @Column(name = "prenom", nullable = false, length = 100)
     private String prenom;
 
-    @NotNull(message = "La date de naissance ne peut pas être vide")
+    @NotNull
     @Column(name = "date_naissance", nullable = false)
     private LocalDate dateNaissance;
 
-    @NotBlank(message = "Le numéro de sécurité sociale ne peut pas être vide")
-    @Size(max = 50, message = "Le numéro de sécurité sociale ne peut pas dépasser 50 caractères")
-    @Column(name = "num_secu", nullable = false, unique = true, length = 50)
-    private String numSecu;
-
-    @Size(max = 255, message = "L'adresse ne peut pas dépasser 255 caractères")
+    @Size(max = 255)
     @Column(name = "adresse", length = 255)
     private String adresse;
 
-    @Size(max = 50, message = "Le téléphone ne peut pas dépasser 50 caractères")
+    @Size(max = 50)
     @Column(name = "telephone", length = 50)
     private String telephone;
 
-    @Size(max = 100, message = "La mutuelle ne peut pas dépasser 100 caractères")
+    @Size(max = 100)
     @Column(name = "mutuelle", length = 100)
     private String mutuelle;
 
+    @NotBlank
+    @Column(name = "num_secu", nullable = false, length = 50)
+    private String numeroSecuriteSociale;
+
     @Column(name = "date_creation")
     private LocalDateTime dateCreation;
-
-    // Relationships
-    @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private DossierMedical dossierMedical;
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Consultation> consultations;
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FileAttente> fileAttentes;
 
     @PrePersist
     protected void onCreate() {
@@ -67,32 +55,19 @@ public class Patient {
         }
     }
 
-    // Constructors
     public Patient() {}
 
-    public Patient(String nom, String prenom, LocalDate dateNaissance, String numSecu) {
+    public Patient(String nom, String prenom, LocalDate dateNaissance) {
         this.nom = nom;
         this.prenom = prenom;
         this.dateNaissance = dateNaissance;
-        this.numSecu = numSecu;
+        this.dateCreation = LocalDateTime.now();
     }
 
-    public Patient(String nom, String prenom, LocalDate dateNaissance, String numSecu, String adresse, String telephone, String mutuelle) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.dateNaissance = dateNaissance;
-        this.numSecu = numSecu;
-        this.adresse = adresse;
-        this.telephone = telephone;
-        this.mutuelle = mutuelle;
-    }
-
-    // Business methods
     public String getNomComplet() {
         return prenom + " " + nom;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -105,9 +80,6 @@ public class Patient {
     public LocalDate getDateNaissance() { return dateNaissance; }
     public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
 
-    public String getNumSecu() { return numSecu; }
-    public void setNumSecu(String numSecu) { this.numSecu = numSecu; }
-
     public String getAdresse() { return adresse; }
     public void setAdresse(String adresse) { this.adresse = adresse; }
 
@@ -117,27 +89,9 @@ public class Patient {
     public String getMutuelle() { return mutuelle; }
     public void setMutuelle(String mutuelle) { this.mutuelle = mutuelle; }
 
+    public String getNumeroSecuriteSociale() { return numeroSecuriteSociale; }
+    public void setNumeroSecuriteSociale(String numeroSecuriteSociale) { this.numeroSecuriteSociale = numeroSecuriteSociale; }
+
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
-
-    public DossierMedical getDossierMedical() { return dossierMedical; }
-    public void setDossierMedical(DossierMedical dossierMedical) { this.dossierMedical = dossierMedical; }
-
-    public List<Consultation> getConsultations() { return consultations; }
-    public void setConsultations(List<Consultation> consultations) { this.consultations = consultations; }
-
-    public List<FileAttente> getFileAttentes() { return fileAttentes; }
-    public void setFileAttentes(List<FileAttente> fileAttentes) { this.fileAttentes = fileAttentes; }
-
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "id=" + id +
-                ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
-                ", dateNaissance=" + dateNaissance +
-                ", numSecu='" + numSecu + '\'' +
-                ", dateCreation=" + dateCreation +
-                '}';
-    }
 }

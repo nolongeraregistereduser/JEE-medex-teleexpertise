@@ -55,13 +55,7 @@ public class Creneau {
     }
 
     public void liberer() {
-        if (dateHeureDebut.isAfter(LocalDateTime.now())) {
-            this.status = StatusCreneau.DISPONIBLE;
-        }
-    }
-
-    public void archiver() {
-        this.status = StatusCreneau.ARCHIVE;
+        this.status = StatusCreneau.DISPONIBLE;
     }
 
     // Getters and Setters
@@ -73,6 +67,10 @@ public class Creneau {
 
     public LocalDateTime getDateHeureDebut() { return dateHeureDebut; }
     public void setDateHeureDebut(LocalDateTime dateHeureDebut) { this.dateHeureDebut = dateHeureDebut; }
+
+    // Add getDateHeure method (alias for getDateHeureDebut)
+    public LocalDateTime getDateHeure() { return dateHeureDebut; }
+    public void setDateHeure(LocalDateTime dateHeure) { this.dateHeureDebut = dateHeure; }
 
     public LocalDateTime getDateHeureFin() { return dateHeureFin; }
     public void setDateHeureFin(LocalDateTime dateHeureFin) { this.dateHeureFin = dateHeureFin; }
