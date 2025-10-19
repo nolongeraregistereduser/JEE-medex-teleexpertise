@@ -1,10 +1,8 @@
 package com.example.jeemedexteleexpertise.util;
 
-import com.example.jeemedexteleexpertise.dao.UtilisateurDAO;
 import com.example.jeemedexteleexpertise.model.Generaliste;
 import com.example.jeemedexteleexpertise.model.Infermier;
 import com.example.jeemedexteleexpertise.model.Specialiste;
-import com.example.jeemedexteleexpertise.service.AuthService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
