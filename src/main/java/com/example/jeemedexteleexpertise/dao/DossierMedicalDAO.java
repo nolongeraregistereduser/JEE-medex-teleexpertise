@@ -1,36 +1,65 @@
 package com.example.jeemedexteleexpertise.dao;
 
 import com.example.jeemedexteleexpertise.model.DossierMedical;
-import jakarta.ejb.Stateless;
+import com.example.jeemedexteleexpertise.util.HibernateUtil;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
-@Stateless
-public class DossierMedicalDAO {
+import java.util.List;
+import java.util.Optional;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+public class DossierMedicalDAO extends BaseDAO<DossierMedical, Long> {
 
-    @Transactional
-    public void save(DossierMedical dossierMedical) {
-        entityManager.persist(dossierMedical);
+    public DossierMedicalDAO() {
+        super(DossierMedical.class);
     }
 
-    @Transactional
-    public void update(DossierMedical dossierMedical) {
-        entityManager.merge(dossierMedical);}
-
-    @Transactional
-    public void delete(Long id) {
-        DossierMedical dossierMedical = entityManager.find(DossierMedical.class, id);
-        if (dossierMedical != null) {
-            entityManager.remove(dossierMedical);
+    public Optional<DossierMedical> findByPatientId(Long patientId) {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<DossierMedical> query = em.createQuery(
+                "SELECT d FROM DossierMedical d WHERE d.patient.id = :patientId",
+                DossierMedical.class);
+            query.setParameter("patientId", patientId);
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
         }
     }
 
-    public DossierMedical findById(Long id) {
-        return entityManager.find(DossierMedical.class, id);
+    public Optional<DossierMedical> findByPatientIdWithSignesVitaux(Long patientId) {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<DossierMedical> query = em.createQuery(
+                "SELECT d FROM DossierMedical d " +
+                "LEFT JOIN FETCH d.signesVitaux " +
+                "WHERE d.patient.id = :patientId",
+                DossierMedical.class);
+            query.setParameter("patientId", patientId);
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
+        }
     }
 
+    public List<DossierMedical> findAllWithPatients() {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<DossierMedical> query = em.createQuery(
+                "SELECT d FROM DossierMedical d LEFT JOIN FETCH d.patient",
+                DossierMedical.class);
+            return query.getResultList();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
+        }
+    }
 }
+

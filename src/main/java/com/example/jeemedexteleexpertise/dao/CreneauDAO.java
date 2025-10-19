@@ -1,40 +1,122 @@
 package com.example.jeemedexteleexpertise.dao;
 
-import jakarta.ejb.Stateless;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import com.example.jeemedexteleexpertise.model.Creneau;
+import com.example.jeemedexteleexpertise.model.StatusCreneau;
+import com.example.jeemedexteleexpertise.util.HibernateUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
-@Stateless
-public class CreneauDAO {
+import java.time.LocalDateTime;
+import java.util.List;
 
-    @PersistenceContext
+public class CreneauDAO extends BaseDAO<Creneau, Long> {
 
-    private EntityManager entityManager;
-
-    @Transactional
-    public void save(Creneau creneau) {
-        entityManager.persist(creneau);
+    public CreneauDAO() {
+        super(Creneau.class);
     }
 
-    @Transactional
-    public void update(Creneau creneau) {
-        entityManager.merge(creneau);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        Creneau creneau = entityManager.find(Creneau.class, id);
-        if (creneau != null) {
-            entityManager.remove(creneau);
+    public List<Creneau> findBySpecialisteId(Long specialisteId) {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<Creneau> query = em.createQuery(
+                "SELECT c FROM Creneau c WHERE c.medecinSpecialiste.id = :specialisteId ORDER BY c.dateHeureDebut ASC",
+                Creneau.class);
+            query.setParameter("specialisteId", specialisteId);
+            return query.getResultList();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
         }
     }
 
-    public Creneau findById(Long id) {
-        return entityManager.find(Creneau.class, id);
+    public List<Creneau> findAvailableBySpecialisteId(Long specialisteId) {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<Creneau> query = em.createQuery(
+                "SELECT c FROM Creneau c " +
+                "WHERE c.medecinSpecialiste.id = :specialisteId " +
+                "AND c.status = :status " +
+                "AND c.dateHeureDebut > :now " +
+                "ORDER BY c.dateHeureDebut ASC",
+                Creneau.class);
+            query.setParameter("specialisteId", specialisteId);
+            query.setParameter("status", StatusCreneau.DISPONIBLE);
+            query.setParameter("now", LocalDateTime.now());
+            return query.getResultList();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
+        }
     }
 
+    public List<Creneau> findBySpecialisteIdAndStatus(Long specialisteId, StatusCreneau status) {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<Creneau> query = em.createQuery(
+                "SELECT c FROM Creneau c " +
+                "WHERE c.medecinSpecialiste.id = :specialisteId AND c.status = :status " +
+                "ORDER BY c.dateHeureDebut ASC",
+                Creneau.class);
+            query.setParameter("specialisteId", specialisteId);
+            query.setParameter("status", status);
+            return query.getResultList();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
+        }
+    }
 
+    public List<Creneau> findPastCreneaux() {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<Creneau> query = em.createQuery(
+                "SELECT c FROM Creneau c WHERE c.dateHeureFin < :now",
+                Creneau.class);
+            query.setParameter("now", LocalDateTime.now());
+            return query.getResultList();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
+        }
+    }
 
+    public List<Creneau> findBySpecialisteIdAndDateRange(Long specialisteId, LocalDateTime startDate, LocalDateTime endDate) {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<Creneau> query = em.createQuery(
+                "SELECT c FROM Creneau c " +
+                "WHERE c.medecinSpecialiste.id = :specialisteId " +
+                "AND c.dateHeureDebut >= :startDate " +
+                "AND c.dateHeureFin <= :endDate " +
+                "ORDER BY c.dateHeureDebut ASC",
+                Creneau.class);
+            query.setParameter("specialisteId", specialisteId);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", endDate);
+            return query.getResultList();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
+        }
+    }
+
+    public long countAvailableBySpecialisteId(Long specialisteId) {
+        EntityManager em = null;
+        try {
+            em = HibernateUtil.getEntityManager();
+            TypedQuery<Long> query = em.createQuery(
+                "SELECT COUNT(c) FROM Creneau c " +
+                "WHERE c.medecinSpecialiste.id = :specialisteId " +
+                "AND c.status = :status " +
+                "AND c.dateHeureDebut > :now",
+                Long.class);
+            query.setParameter("specialisteId", specialisteId);
+            query.setParameter("status", StatusCreneau.DISPONIBLE);
+            query.setParameter("now", LocalDateTime.now());
+            return query.getSingleResult();
+        } finally {
+            HibernateUtil.closeEntityManager(em);
+        }
+    }
 }
+
