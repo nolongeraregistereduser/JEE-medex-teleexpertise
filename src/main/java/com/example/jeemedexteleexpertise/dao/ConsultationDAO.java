@@ -17,6 +17,8 @@ public class ConsultationDAO extends BaseDAO<Consultation, Long> {
         super(Consultation.class);
     }
 
+    // Fetch Consultation with associated Patient, MedecinGeneraliste, and ActesTechniques
+
     public Optional<Consultation> findByIdWithDetails(Long id) {
         EntityManager em = null;
         try {
