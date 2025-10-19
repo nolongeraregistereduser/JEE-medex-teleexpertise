@@ -95,7 +95,7 @@ public class ConsultationService extends BaseService<Consultation, Long> {
         consultation.setTraitement(traitement);
         consultation.setStatus(StatusConsultation.TERMINEE);
 
-        consultationDAO.update(consultation);
+        update(consultation); // Use inherited update method from BaseService
     }
 
     public void requestSpecialistOpinion(Long consultationId) {
@@ -111,7 +111,7 @@ public class ConsultationService extends BaseService<Consultation, Long> {
         Consultation consultation = consultationOpt.get();
         consultation.setStatus(StatusConsultation.EN_ATTENTE_AVIS_SPECIALISTE);
 
-        consultationDAO.update(consultation);
+        update(consultation);
     }
 
     public double calculateTotalCost(Long consultationId) {
@@ -119,27 +119,29 @@ public class ConsultationService extends BaseService<Consultation, Long> {
             return 0.0;
         }
 
-        Optional<Consultation> consultationOpt = findById(consultationId);
+        Optional<Consultation> consultationOpt = findByIdWithDetails(consultationId);
         if (consultationOpt.isEmpty()) {
             return 0.0;
         }
 
         Consultation consultation = consultationOpt.get();
 
-        double consultationCost = consultation.getCout() != null ? consultation.getCout() : 150.0;
+        // Base consultation cost
+        double total = consultation.getCout() != null ? consultation.getCout() : 150.0;
 
+        // Add technical acts cost using Lambda
         List<ActeTechnique> actes = acteTechniqueDAO.findByConsultationId(consultationId);
         double actesCost = actes.stream()
-                .mapToDouble(acte -> 0.0)
+                .mapToDouble(ActeTechnique::getCoutActe)
                 .sum();
 
+        // Add expertise cost using Lambda
         List<DemandeExpertise> demandes = demandeExpertiseDAO.findByConsultationId(consultationId);
         double expertiseCost = demandes.stream()
-                .mapToDouble(demande -> demande.getMedecinSpecialiste() != null ?
-                    demande.getMedecinSpecialiste().getTarif() : 0.0)
+                .mapToDouble(d -> d.getMedecinSpecialiste().getTarif())
                 .sum();
 
-        return consultationCost + actesCost + expertiseCost;
+        return total + actesCost + expertiseCost;
     }
 
     @Override
@@ -161,4 +163,3 @@ public class ConsultationService extends BaseService<Consultation, Long> {
         return super.save(entity);
     }
 }
-
