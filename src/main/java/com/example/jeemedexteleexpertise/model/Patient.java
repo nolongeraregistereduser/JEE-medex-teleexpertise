@@ -92,6 +92,10 @@ public class Patient {
     public String getNumeroSecuriteSociale() { return numeroSecuriteSociale; }
     public void setNumeroSecuriteSociale(String numeroSecuriteSociale) { this.numeroSecuriteSociale = numeroSecuriteSociale; }
 
+    // Alias method for convenience
+    public String getNumSecu() { return numeroSecuriteSociale; }
+    public void setNumSecu(String numSecu) { this.numeroSecuriteSociale = numSecu; }
+
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 }

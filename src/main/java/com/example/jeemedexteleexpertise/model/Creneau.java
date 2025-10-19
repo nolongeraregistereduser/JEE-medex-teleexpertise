@@ -58,6 +58,10 @@ public class Creneau {
         this.status = StatusCreneau.DISPONIBLE;
     }
 
+    public void archiver() {
+        this.status = StatusCreneau.ARCHIVE;
+    }
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
