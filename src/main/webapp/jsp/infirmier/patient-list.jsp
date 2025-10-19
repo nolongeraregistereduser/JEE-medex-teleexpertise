@@ -114,6 +114,7 @@
                                     <th>Téléphone</th>
                                     <th>Heure d'Arrivée</th>
                                     <th>Statut</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -156,6 +157,12 @@
                                                     </span>
                                                 </c:otherwise>
                                             </c:choose>
+                                        </td>
+                                        <td>
+                                            <a href="${pageContext.request.contextPath}/infirmier/patient-details?id=${fileAttente.patient.id}"
+                                               class="btn btn-sm btn-info" title="Voir les détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 </c:forEach>
