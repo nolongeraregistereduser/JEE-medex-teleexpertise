@@ -52,6 +52,15 @@ public class ConsultationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String action = request.getParameter("action");
+
+        // Handle closing consultation
+        if ("close".equals(action)) {
+            closeConsultation(request, response);
+            return;
+        }
+
+        // Existing code for creating consultation
         try {
             // Get form parameters
             String patientIdStr = request.getParameter("patientId");
@@ -209,6 +218,56 @@ public class ConsultationServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/generaliste/consultation");
+        }
+    }
+
+    private void closeConsultation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            String consultationIdStr = request.getParameter("consultationId");
+            String diagnostic = request.getParameter("diagnostic");
+            String traitement = request.getParameter("traitement");
+
+            if (consultationIdStr == null || diagnostic == null || traitement == null) {
+                response.sendRedirect(request.getContextPath() + "/generaliste/consultation?error=missing");
+                return;
+            }
+
+            Long consultationId = Long.parseLong(consultationIdStr);
+
+            // Load consultation
+            Optional<Consultation> consultationOpt = consultationService.findById(consultationId);
+            if (consultationOpt.isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/generaliste/consultation?error=notfound");
+                return;
+            }
+
+            Consultation consultation = consultationOpt.get();
+
+            // Verify access
+            HttpSession session = request.getSession();
+            Utilisateur user = (Utilisateur) session.getAttribute("user");
+
+            if (!consultation.getMedecinGeneraliste().getId().equals(user.getId())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+                return;
+            }
+
+            // Update consultation
+            consultation.setDiagnostic(diagnostic.trim());
+            consultation.setTraitement(traitement.trim());
+            consultation.setStatus(StatusConsultation.TERMINEE);
+
+            consultationService.update(consultation);
+
+            // Redirect to details page
+            response.sendRedirect(request.getContextPath() +
+                "/generaliste/consultation?action=view&id=" + consultationId + "&success=closed");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/generaliste/consultation?error=true");
         }
     }
 }

@@ -23,15 +23,31 @@ public class ConsultationDAO extends BaseDAO<Consultation, Long> {
         EntityManager em = null;
         try {
             em = HibernateUtil.getEntityManager();
-            TypedQuery<Consultation> query = em.createQuery(
-                "SELECT c FROM Consultation c " +
+
+            // First query: fetch consultation with patient, generaliste, and actesTechniques
+            TypedQuery<Consultation> query1 = em.createQuery(
+                "SELECT DISTINCT c FROM Consultation c " +
                 "LEFT JOIN FETCH c.patient " +
                 "LEFT JOIN FETCH c.medecinGeneraliste " +
                 "LEFT JOIN FETCH c.actesTechniques " +
                 "WHERE c.id = :id",
                 Consultation.class);
-            query.setParameter("id", id);
-            return Optional.ofNullable(query.getSingleResult());
+            query1.setParameter("id", id);
+            Consultation consultation = query1.getSingleResult();
+
+            // Second query: fetch demandesExpertise with medecinSpecialiste
+            if (consultation != null) {
+                TypedQuery<Consultation> query2 = em.createQuery(
+                    "SELECT DISTINCT c FROM Consultation c " +
+                    "LEFT JOIN FETCH c.demandesExpertise de " +
+                    "LEFT JOIN FETCH de.medecinSpecialiste " +
+                    "WHERE c.id = :id",
+                    Consultation.class);
+                query2.setParameter("id", id);
+                query2.getSingleResult(); // This loads demandesExpertise into the session
+            }
+
+            return Optional.ofNullable(consultation);
         } catch (NoResultException e) {
             return Optional.empty();
         } finally {
@@ -139,4 +155,3 @@ public class ConsultationDAO extends BaseDAO<Consultation, Long> {
         }
     }
 }
-

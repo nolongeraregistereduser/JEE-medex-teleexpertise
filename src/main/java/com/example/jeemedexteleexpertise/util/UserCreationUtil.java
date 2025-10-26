@@ -37,16 +37,16 @@ public class UserCreationUtil {
 
             // Create test Généraliste
             Generaliste generaliste = new Generaliste();
-            generaliste.setNom("Dupont");
-            generaliste.setPrenom("Jean");
+            generaliste.setNom("Simo");
+            generaliste.setPrenom("Generaliste");
             generaliste.setEmail("generaliste@test.com");
             generaliste.setMotDePasse(BCrypt.hashpw("password123", BCrypt.gensalt()));
             em.persist(generaliste);
 
             // Create test Spécialiste
             Specialiste specialiste = new Specialiste();
-            specialiste.setNom("Martin");
-            specialiste.setPrenom("Marie");
+            specialiste.setNom("Simo");
+            specialiste.setPrenom("Specialiste");
             specialiste.setEmail("specialiste@test.com");
             specialiste.setMotDePasse(BCrypt.hashpw("password123", BCrypt.gensalt()));
             specialiste.setTarif(300.0);
@@ -55,8 +55,8 @@ public class UserCreationUtil {
 
             // Create test Infirmier
             Infermier infirmier = new Infermier();
-            infirmier.setNom("Durand");
-            infirmier.setPrenom("Claire");
+            infirmier.setNom("Simo");
+            infirmier.setPrenom("Infirmier");
             infirmier.setEmail("infirmier@test.com");
             infirmier.setMotDePasse(BCrypt.hashpw("password123", BCrypt.gensalt()));
             em.persist(infirmier);
