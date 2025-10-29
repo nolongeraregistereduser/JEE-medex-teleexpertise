@@ -71,6 +71,13 @@
             </div>
         </c:if>
 
+        <c:if test="${param.success == 'specialist_requested'}">
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle"></i> Demande de spécialiste envoyée avec succès!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </c:if>
+
         <div class="card">
             <h4 class="mb-3"><i class="fas fa-list"></i> Patients en Attente (${totalToday})</h4>
 
@@ -133,6 +140,10 @@
                                                     </button>
                                                 </form>
                                             </c:if>
+                                            <a href="${pageContext.request.contextPath}/generaliste/patient-waiting-details?patientId=${file.patient.id}&fileAttenteId=${file.id}"
+                                               class="btn btn-sm btn-info" title="View Details">
+                                                <i class="fas fa-eye"></i> Details
+                                            </a>
                                             <a href="${pageContext.request.contextPath}/generaliste/consultation?action=new&patientId=${file.patient.id}"
                                                class="btn btn-sm btn-primary" title="Créer consultation">
                                                 <i class="fas fa-file-medical"></i>
